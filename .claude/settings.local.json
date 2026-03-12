@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(for dir:*)",
+      "Bash(do echo:*)",
+      "Read(//c/Users/lovea/Desktop/dev/AntigravityTemplate/$dir/**)",
+      "Bash(done)",
+      "Bash(mkdir -p /c/Users/lovea/Desktop/dev/AntigravityTemplate/skills/pptx/references && mv /c/Users/lovea/Desktop/dev/AntigravityTemplate/skills/pptx/html2pptx.md /c/Users/lovea/Desktop/dev/AntigravityTemplate/skills/pptx/references/html2pptx.md && mv /c/Users/lovea/Desktop/dev/AntigravityTemplate/skills/pptx/ooxml.md /c/Users/lovea/Desktop/dev/AntigravityTemplate/skills/pptx/references/ooxml.md)",
+      "WebFetch(domain:wrlds.com)",
+      "WebSearch",
+      "WebFetch(domain:www.linkedin.com)",
+      "WebFetch(domain:www.crunchbase.com)",
+      "WebFetch(domain:api.github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" remote -v)",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" log --oneline -5)",
+      "Bash(rm -rf \"c:/Users/lovea/Desktop/dev/jumpyard-processes/.git\")",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" init)",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" add jumpyard-bpmn.html)",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" commit -m \"Initial commit: JumpYard entry operations BPMN v1.0\")",
+      "Bash(gh repo create jumpyard-processes --public --description \"JumpYard entry operations BPMN process flows — AS-IS & TO-BE\" --source \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" --remote origin --push)",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" commit -m \"fix: lane label clipping, task text wrap, node height:*)",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" push)",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" add AGENTS.md .claude/ skills/)",
+      "Bash(git -C \"c:/Users/lovea/Desktop/dev/jumpyard-processes\" status --short)"
+    ]
+  }
+}
