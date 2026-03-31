@@ -142,6 +142,7 @@ const TaskNode = ({ data }: any) => {
 };
 
 const ServiceNode = ({ data }: any) => {
+  const hideDetailsOnCanvas = data.hideDetailsOnCanvas || data.lane === 'AWS + Aurora';
   const border = data.edgeHighlighted
     ? 'border-cyan-200 shadow-[0_0_14px_rgba(34,211,238,0.35)]'
     : data.isPrimary
@@ -158,7 +159,7 @@ const ServiceNode = ({ data }: any) => {
       <div className="text-[11px] font-black uppercase tracking-[0.12em] text-sky-50 break-words leading-snug">
         {data.label}
       </div>
-      {data.details && (
+      {data.details && !hideDetailsOnCanvas && (
         <div className="mt-2 text-[10px] leading-relaxed text-white/46">
           {data.details}
         </div>
@@ -169,6 +170,61 @@ const ServiceNode = ({ data }: any) => {
     </div>
   );
 };
+
+const HIDDEN_CANVAS_NODE_IDS = new Set([
+  'aws-rdb',
+  'aws-redis',
+  'aws-s3',
+  'aws-sqs',
+  'staff-assist',
+  'staff-manual',
+  'staff-api-end',
+]);
+
+function mergeUniqueStrings(...lists: Array<string[] | undefined>) {
+  return Array.from(
+    new Set(
+      lists.flatMap((list) => list ?? []).filter((item): item is string => Boolean(item)),
+    ),
+  );
+}
+
+function isCanvasHiddenNode(node: any) {
+  return HIDDEN_CANVAS_NODE_IDS.has(node?.id);
+}
+
+function getProjectedNodeData(node: any, language: Language) {
+  const t = (value: string) => translateText(value, language);
+  const data = localizeValue(node.data, language) as any;
+
+  if (node.id === 'store-snapshot') {
+    data.systems = mergeUniqueStrings(data.systems, [t('Aurora PostgreSQL'), t('S3 rå-payloads')]);
+  }
+
+  if (node.id === 'store-operational') {
+    data.systems = mergeUniqueStrings(data.systems, [t('Aurora PostgreSQL'), t('Redis (valfri i V1)'), t('SQS / EventBridge')]);
+  }
+
+  if (node.id === 'store-events') {
+    data.systems = mergeUniqueStrings(data.systems, [t('Aurora PostgreSQL'), t('S3 rå-payloads'), t('SQS / EventBridge')]);
+  }
+
+  if (node.id === 'store-future') {
+    data.future = false;
+    delete data.statusTag;
+    data.label = t('Connected experience');
+    data.summary = t('Aktiv connected-del i piloten för profiler, bandkoppling och sessionsunderlag.');
+    data.writePattern = t('Aktiv i piloten när connected valts och när staff kopplar band vid utlämning.');
+    data.systems = mergeUniqueStrings(data.systems, [t('Aurora PostgreSQL')]);
+  }
+
+  if (node.id === 'staff-handoff') {
+    data.details = t('Normal utlämning hos staff när check-in-flödet är klart.');
+    data.why = t('Staff verifierar QR-kod eller bokningskod, lämnar ut tillägg och kopplar Connected Experience-band. Om något strular kan staff falla tillbaka till dagens manuella check-in.');
+  }
+
+  return data;
+}
 
 const GatewayNode = ({ data }: any) => (
   <div className={`relative w-16 h-16 flex items-center justify-center transition-opacity ${data.dimmed ? 'opacity-30' : 'opacity-100'}`}>
@@ -447,7 +503,7 @@ const ROLLER_API_REFERENCES: Record<string, RollerApiReference> = {
   },
   'Redeem tickets': {
     name: 'Redeem tickets',
-    docUrl: 'https://docs.roller.app/docs/rest-api/fb1d84952285f',
+    docUrl: 'https://docs.roller.app/docs/rest-api/fb1d84952285f-redeem-tickets',
     docLabel: 'Dokumentation',
     docStatus: 'official',
   },
@@ -477,12 +533,15 @@ const ROLLER_API_REFERENCES: Record<string, RollerApiReference> = {
   },
   'Edit booking': {
     name: 'Edit booking',
-    docStatus: 'confirm',
-    note: 'Doklänk att bekräfta',
+    docUrl: 'https://docs.roller.app/docs/rest-api/v4mzj4t4erwa9-update-a-booking',
+    docLabel: 'Dokumentation',
+    docStatus: 'official',
   },
   'Add transaction record': {
     name: 'Add transaction record',
-    docStatus: 'confirm',
+    docUrl: 'https://docs.roller.app/docs/rest-api/a86n5aasxe98r-add-transaction-record',
+    docLabel: 'Dokumentation',
+    docStatus: 'official',
     note: 'Doklänk att bekräfta',
   },
 };
@@ -558,7 +617,9 @@ function ArrayField({ label, items, onAdd, onRemove, placeholder }: {
 // ─── Read-only metadata ───────────────────────────────────────────────────────
 
 function getRollerApiReference(endpoint: string): RollerApiReference {
-  return ROLLER_API_REFERENCES[endpoint] ?? { name: endpoint };
+  const canonicalEndpoint = translateText(endpoint, 'en');
+  const reference = ROLLER_API_REFERENCES[endpoint] ?? ROLLER_API_REFERENCES[canonicalEndpoint];
+  return reference ? { ...reference, name: endpoint } : { name: endpoint };
 }
 
 function EndpointReferenceList({
@@ -1045,7 +1106,7 @@ function sanitizeEdgeForStorage(edge: any, nodesOrLookup?: any[] | Map<string, a
 
 // ─── Persistence ──────────────────────────────────────────────────────────────
 
-const FLOW_SCHEMA_VERSION = '2026-03-staff-under-guest-v7';
+const FLOW_SCHEMA_VERSION = '2026-03-cloud-lane-swap-v8';
 const STORAGE_NODES = `jy-bpmn-nodes:${FLOW_SCHEMA_VERSION}`;
 const STORAGE_EDGES = `jy-bpmn-edges:${FLOW_SCHEMA_VERSION}`;
 const STORAGE_LANGUAGE = 'jy-bpmn-language';
@@ -1227,42 +1288,49 @@ function PoolRow({ pool, onRename, onDelete, onMove, isFirst, isLast, onAddLane,
 const ROLLER_KRAV = [
   {
     endpoint: 'GET /booking/{ref}',
+    docUrl: 'https://docs.roller.app/docs/rest-api/olt8a8nxs75ev',
     priority: 'CRITICAL',
     label: 'Hämta bokning',
     desc: 'Returnerar: gästnamn, email, produktlista, biljettantal, betalningsstatus, sessionstid',
   },
   {
     endpoint: 'GET /products',
+    docUrl: 'https://docs.roller.app/docs/roller-api/7bbac8eaac480-get-products',
     priority: 'CRITICAL',
     label: 'Hämta produkter',
     desc: 'Alla köpbara produkter med pris per venue (strumpor, upplevelser, tillägg)',
   },
   {
     endpoint: 'POST /booking/costs',
+    docUrl: 'https://docs.roller.app/docs/rest-api/branches/main/62e21c34b7ef3',
     priority: 'HIGH',
     label: 'Beräkna kostnad',
     desc: 'Kostnadsberäkning med tillagda produkter — utan att skapa bokning',
   },
   {
     endpoint: 'PUT /booking/{ref}',
+    docUrl: 'https://docs.roller.app/docs/rest-api/v4mzj4t4erwa9-update-a-booking',
     priority: 'CRITICAL',
     label: 'Uppdatera bokning',
     desc: 'Lägg till produkter i befintlig bokning (lägger till i SAMMA bokning, ej ny)',
   },
   {
     endpoint: 'POST /booking/payment',
+    docUrl: 'https://docs.roller.app/docs/rest-api/a86n5aasxe98r-add-transaction-record',
     priority: 'CRITICAL',
     label: 'Registrera betalning',
     desc: 'Registrera Adyen-transaktion mot bokning — fungerar för initial + tillägg. Endpoint: Add transaction record',
   },
   {
     endpoint: 'POST /tickets/redeem',
+    docUrl: 'https://docs.roller.app/docs/rest-api/fb1d84952285f-redeem-tickets',
     priority: 'CRITICAL',
     label: 'Lös in biljetter',
     desc: 'ETT anrop per biljett-ID. Status uppdateras direkt i Roller-dashboard. Waivers: EJ AKTUELLT hos JumpYard',
   },
   {
     endpoint: 'Webhook: ticket check-in',
+    docUrl: 'https://docs.roller.app/docs/rest-api/3a934c551891e-create-webhook',
     priority: 'HIGH',
     label: 'Check-in bekräftelse',
     desc: 'Triggas vid inlösning (ingen direkt GET-endpoint för check-in-status)',
@@ -1297,6 +1365,16 @@ function DataKravPanel({ onClose, language }: { onClose: () => void; language: L
             </div>
             <div className="text-[11px] font-bold text-white/80 mb-1">{t(k.label)}</div>
             <div className="text-[10px] text-white/50 leading-relaxed">{t(k.desc)}</div>
+            {k.docUrl && (
+              <a
+                href={k.docUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-flex text-[10px] font-bold text-cyan-300 underline underline-offset-2 hover:text-cyan-200"
+              >
+                {t('Dokumentation')}
+              </a>
+            )}
           </div>
         ))}
         <div className="pt-2 pb-1 text-[9px] text-white/25 text-center">
@@ -1314,46 +1392,25 @@ function ArchitecturePanel({ onClose, language, nodes }: { onClose: () => void; 
   const byCanvasOrder = (a: any, b: any) => (a.position.x - b.position.x) || (a.position.y - b.position.y);
   const projectNodeData = (predicate: (node: any) => boolean) =>
     nodes
+      .filter((node) => !isCanvasHiddenNode(node))
       .filter(predicate)
       .sort(byCanvasOrder)
-      .map((node) => ({ id: node.id, data: localizeValue(node.data, language) as any }));
+      .map((node) => ({ id: node.id, data: getProjectedNodeData(node, language) as any }));
 
-  const awsNodes = projectNodeData((node) => node.data?.archCategory === 'aws');
-  const dataNodes = projectNodeData((node) => node.type === 'database' && ['data', 'future'].includes(String(node.data?.archCategory)));
-  const jobNodes = projectNodeData((node) => node.data?.archCategory === 'job');
+  const dataNodes = projectNodeData((node) => node.type === 'database');
+  const jobNodes = projectNodeData((node) => node.type === 'task' && String(node.data?.lane) === 'Ops jobs');
 
   return (
     <div className="fixed top-0 right-0 h-full w-[430px] z-50 bg-[#0e0e0e]/98 backdrop-blur-xl border-l border-white/10 shadow-2xl flex flex-col overflow-hidden">
       <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
         <div>
           <div className="text-xs font-black uppercase tracking-widest text-white">{t('Arkitektur / Ops')}</div>
-          <div className="text-[10px] text-white/40 mt-0.5">{t('AWS-komponenter, Aurora-tabellgrupper, Roller API-karta och jobb')}</div>
+          <div className="text-[10px] text-white/40 mt-0.5">{t('Aurora-tabellgrupper, Roller API-karta och jobb')}</div>
         </div>
         <button onClick={onClose} className="text-white/40 hover:text-white text-lg leading-none px-1">×</button>
       </div>
 
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-4">
-        <section>
-          <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-white/45">{t('AWS-komponenter')}</div>
-          <div className="space-y-2">
-            {awsNodes.map(({ id, data }) => (
-              <div key={id} className="rounded border border-sky-300/18 bg-sky-400/6 p-3">
-                <div className="text-[11px] font-bold text-sky-100">{data.label}</div>
-                {data.details && <div className="mt-1 text-[10px] leading-relaxed text-white/60">{data.details}</div>}
-                {data.systems?.length > 0 && (
-                  <div className="mt-2 flex flex-wrap gap-1">
-                    {data.systems.slice(0, 3).map((item: string) => (
-                      <span key={item} className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[9px] font-bold text-white/65">
-                        {item}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </section>
-
         <section>
           <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-white/45">{t('Aurora-tabellgrupper')}</div>
           <div className="space-y-2">
@@ -1369,6 +1426,15 @@ function ArchitecturePanel({ onClose, language, nodes }: { onClose: () => void; 
                 </div>
                 {data.summary && (
                   <div className="mt-1 text-[10px] leading-relaxed text-white/58">{data.summary}</div>
+                )}
+                {data.systems?.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {data.systems.slice(0, 4).map((item: string) => (
+                      <span key={item} className="rounded-full border border-sky-300/18 bg-sky-400/8 px-2 py-0.5 text-[9px] font-bold text-sky-100/80">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
                 )}
                 {data.tables?.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-1">
@@ -1531,17 +1597,24 @@ export default function App() {
 
   const selectedNodeId = selectedElements.nodes[0]?.id ?? null;
   const selectedEdgeId = selectedElements.edges[0]?.id ?? null;
-  const selectedNode = selectedNodeId ? nodes.find(n => n.id === selectedNodeId) ?? null : null;
-  const selectedEdge = selectedEdgeId ? edges.find(e => e.id === selectedEdgeId) ?? null : null;
+  const rawSelectedNode = selectedNodeId ? nodes.find(n => n.id === selectedNodeId) ?? null : null;
+  const rawSelectedEdge = selectedEdgeId ? edges.find(e => e.id === selectedEdgeId) ?? null : null;
+  const selectedNode = rawSelectedNode && !isCanvasHiddenNode(rawSelectedNode) ? rawSelectedNode : null;
+  const selectedEdge = rawSelectedEdge
+    && getEdgeCategory(rawSelectedEdge) !== 'arch'
+    && !HIDDEN_CANVAS_NODE_IDS.has(rawSelectedEdge.source)
+    && !HIDDEN_CANVAS_NODE_IDS.has(rawSelectedEdge.target)
+      ? rawSelectedEdge
+      : null;
   const selectedEdgeSourceNode = selectedEdge ? nodes.find((node) => node.id === selectedEdge.source) ?? null : null;
   const selectedEdgeTargetNode = selectedEdge ? nodes.find((node) => node.id === selectedEdge.target) ?? null : null;
   const hasSelection = !!(selectedNode || selectedEdge);
   const t = (value: string) => translateText(value, language);
-  const selectedNodeViewData = selectedNode ? localizeValue(selectedNode.data, language) : null;
+  const selectedNodeViewData = selectedNode ? getProjectedNodeData(selectedNode, language) : null;
   const selectedEdgeViewData = selectedEdge ? localizeValue(selectedEdge.data || {}, language) : null;
   const selectedNodeViewLabel = selectedNodeViewData?.label || (selectedNode?.type === 'lane' ? t('Lane') : t('Nod'));
-  const selectedEdgeSourceLabel = selectedEdgeSourceNode ? String((localizeValue(selectedEdgeSourceNode.data, language) as any)?.label || selectedEdgeSourceNode.id) : '—';
-  const selectedEdgeTargetLabel = selectedEdgeTargetNode ? String((localizeValue(selectedEdgeTargetNode.data, language) as any)?.label || selectedEdgeTargetNode.id) : '—';
+  const selectedEdgeSourceLabel = selectedEdgeSourceNode ? String((getProjectedNodeData(selectedEdgeSourceNode, language) as any)?.label || selectedEdgeSourceNode.id) : '—';
+  const selectedEdgeTargetLabel = selectedEdgeTargetNode ? String((getProjectedNodeData(selectedEdgeTargetNode, language) as any)?.label || selectedEdgeTargetNode.id) : '—';
 
   useEffect(() => {
     if (editMode) return;
@@ -2432,8 +2505,10 @@ export default function App() {
     ? (((selectedEdge.data as any)?.pathMode || selectedEdge.type || 'smoothstep') as 'smoothstep' | 'step' | 'straight')
     : 'smoothstep';
 
-  const displayNodes = nodes.map((node) => {
-    const data = localizeValue(node.data, language) as any;
+  const displayNodes = nodes
+    .filter((node) => !isCanvasHiddenNode(node))
+    .map((node) => {
+    const data = getProjectedNodeData(node, language) as any;
     data.layoutSelected =
       editMode &&
       selectedElements.edges.length === 0 &&
@@ -2454,11 +2529,14 @@ export default function App() {
     return { ...node, data, draggable: editMode };
   });
 
-  const displayEdges = edges.map((edge) => (
-    typeof edge.label === 'string'
-      ? { ...edge, label: t(edge.label) }
-      : edge
-  ));
+  const displayEdges = edges
+    .filter((edge) => getEdgeCategory(edge) !== 'arch')
+    .filter((edge) => !HIDDEN_CANVAS_NODE_IDS.has(edge.source) && !HIDDEN_CANVAS_NODE_IDS.has(edge.target))
+    .map((edge) => (
+      typeof edge.label === 'string'
+        ? { ...edge, label: t(edge.label) }
+        : edge
+    ));
 
   return (
     <div className="bg-background text-on-surface font-manrope selection:bg-primary selection:text-white min-h-screen flex flex-col">
@@ -2683,10 +2761,6 @@ export default function App() {
                 <div className="flex items-center gap-2 text-[10px] text-white/65">
                   <span className="block w-6 border-t-2 border-cyan-400" style={{ borderTopStyle: 'dashed' }} />
                   {t('Dataflöde: läs, skriv och lagra')}
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-white/65">
-                  <span className="block w-6 border-t-2 border-slate-400" style={{ borderTopStyle: 'dashed' }} />
-                  {t('Arkitekturkoppling / beroende')}
                 </div>
                 <div className="flex items-center gap-2 text-[10px] text-white/65">
                   <span className="block w-6 border-t-2 border-violet-400" style={{ borderTopStyle: 'dashed' }} />
