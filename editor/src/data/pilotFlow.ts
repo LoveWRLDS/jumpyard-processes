@@ -217,19 +217,19 @@ function fallbackEdge(id: string, source: string, target: string, label?: string
 
 const pools = [
   pool('pool-guest', POOL.guest, 0, 170, COLORS.guest),
-  pool('pool-webapp', POOL.webapp, 210, 300, COLORS.webapp),
-  pool('pool-cloud', POOL.cloud, 570, 410, COLORS.cloud),
-  pool('pool-roller', POOL.roller, 1030, 170, COLORS.roller),
-  pool('pool-staff', POOL.staff, 1240, 180, COLORS.staff),
+  pool('pool-staff', POOL.staff, 210, 180, COLORS.staff),
+  pool('pool-webapp', POOL.webapp, 430, 300, COLORS.webapp),
+  pool('pool-cloud', POOL.cloud, 790, 410, COLORS.cloud),
+  pool('pool-roller', POOL.roller, 1250, 170, COLORS.roller),
 ];
 
 const lanes = [
   lane('lane-guest', LANE.guest, 0, 170, 0, 'pool-guest'),
-  lane('lane-webapp', LANE.webapp, 210, 300, 1, 'pool-webapp'),
-  lane('lane-cloud-ops', LANE.ops, 570, 130, 2, 'pool-cloud'),
-  lane('lane-cloud-aws', LANE.aws, 700, 280, 3, 'pool-cloud'),
-  lane('lane-roller', LANE.roller, 1030, 170, 4, 'pool-roller'),
-  lane('lane-staff', LANE.staff, 1240, 180, 5, 'pool-staff'),
+  lane('lane-staff', LANE.staff, 210, 180, 1, 'pool-staff'),
+  lane('lane-webapp', LANE.webapp, 430, 300, 2, 'pool-webapp'),
+  lane('lane-cloud-ops', LANE.ops, 790, 130, 3, 'pool-cloud'),
+  lane('lane-cloud-aws', LANE.aws, 920, 280, 4, 'pool-cloud'),
+  lane('lane-roller', LANE.roller, 1250, 170, 5, 'pool-roller'),
 ];
 
 const guestNodes = [
@@ -250,88 +250,88 @@ const guestNodes = [
 ];
 
 const webAppNodes = [
-  task('app-start', 'VY: Start / länk', 220, 300, LANE.webapp, {
+  task('app-start', 'VY: Start / länk', 220, 520, LANE.webapp, {
     details: 'Gemensam ingång för mobil PWA och kiosk på plats.',
     reads: ['checkin_token', 'channel_hint', 'venue context'],
     shownWhen: ['SMS-länk öppnas', 'QR-kod vid park skannas', 'Kiosk startas på plats'],
     givesGuest: ['Tydlig startpunkt för samma check-in-flöde'],
   }),
-  gateway('gw-channel', 'Kanal?', 430, 294, LANE.webapp, { details: 'Kanalvalet sker tidigt. Därefter är huvudflödet gemensamt.' }),
-  task('app-mobile', 'Mobil i telefonens PWA', 620, 248, LANE.webapp, {
+  gateway('gw-channel', 'Kanal?', 430, 514, LANE.webapp, { details: 'Kanalvalet sker tidigt. Därefter är huvudflödet gemensamt.' }),
+  task('app-mobile', 'Mobil i telefonens PWA', 620, 468, LANE.webapp, {
     details: 'Mobilspåret avgör om gästen kommer via personlig SMS-länk eller parkens allmänna QR.',
     shownWhen: ['Gästen använder egen telefon'],
     skippedWhen: ['Gästen väljer kiosk på plats'],
   }),
-  gateway('gw-mobile-entry', 'Öppnad via?', 860, 242, LANE.webapp, {
+  gateway('gw-mobile-entry', 'Öppnad via?', 860, 462, LANE.webapp, {
     details: 'SMS-länk med token går direkt in i bokningen. Park-QR går via en allmän sida och sedan lookup.',
   }),
-  task('app-onsite', 'Park-QR / allmän sida', 1030, 248, LANE.webapp, {
+  task('app-onsite', 'Park-QR / allmän sida', 1030, 468, LANE.webapp, {
     details: 'Publik startsida från parkens QR där gästen kan välja att hitta befintlig bokning eller köpa på plats.',
     reads: ['venue context', 'channel = park_qr'],
     shownWhen: ['Park-QR öppnas i mobilen'],
     skippedWhen: ['SMS-länk med token används'],
     givesGuest: ['Tydlig start med val mellan befintlig bokning och köp på plats'],
   }),
-  task('kiosk-entry', 'Kiosk på plats', 620, 382, LANE.webapp, {
+  task('kiosk-entry', 'Kiosk på plats', 620, 602, LANE.webapp, {
     details: 'Kiosk är en alternativ ingång till samma WebApp-flöde.',
     shownWhen: ['Gästen väljer kiosk i parken'],
     skippedWhen: ['Gästen använder egen telefon'],
   }),
-  gateway('gw-kiosk-existing', 'Har du befintlig bokning?', 900, 376, LANE.webapp, { details: 'Delad gateway för Park-QR och kiosk: antingen hitta befintlig bokning eller köpa på plats.' }),
-  task('kiosk-lookup', 'Hitta befintlig bokning', 1250, 316, LANE.webapp, {
+  gateway('gw-kiosk-existing', 'Har du befintlig bokning?', 900, 596, LANE.webapp, { details: 'Delad gateway för Park-QR och kiosk: antingen hitta befintlig bokning eller köpa på plats.' }),
+  task('kiosk-lookup', 'Hitta befintlig bokning', 1250, 536, LANE.webapp, {
     details: 'Gemensam lookup för mobil via Park-QR och kiosk med befintlig bokning.',
     reads: ['booking_ref', 'telefon + efternamn', 'QR-matchning'],
     shownWhen: ['Park-QR öppnas i mobilen', 'Kiosk används och gästen redan har bokning'],
     skippedWhen: ['SMS-länk med token går direkt till bokningen'],
   }),
-  task('kiosk-buy', 'Köp biljett på plats', 1120, 430, LANE.webapp, {
+  task('kiosk-buy', 'Köp biljett på plats', 1120, 650, LANE.webapp, {
     details: 'Det här är kioskens huvudsakliga avvikelse från mobilflödet.',
     writes: ['walk_in_purchase', 'nya deltagare', 'provisorisk operativ state'],
     shownWhen: ['Kiosk används och ingen befintlig bokning hittas'],
     givesGuest: ['Ny bokning som går vidare in i samma check-in-flöde'],
   }),
-  task('app-booking', 'VY: Bokning & deltagare', 1540, 340, LANE.webapp, {
+  task('app-booking', 'VY: Bokning & deltagare', 1540, 560, LANE.webapp, {
     details: 'Gemensamt huvudsteg för både mobil och kiosk efter att bokningen är identifierad.',
     reads: ['bokningssammanfattning', 'deltagare', 'produkter', 'betalningsstatus'],
     shownWhen: ['Bokning finns eller har skapats'],
   }),
-  task('app-safety', 'VY: Safety', 1810, 340, LANE.webapp, {
+  task('app-safety', 'VY: Safety', 1810, 560, LANE.webapp, {
     details: 'Samma safetysteg oavsett kanal.',
     writes: ['safety_status', 'safety_completed_at'],
     givesGuest: ['Klart safety-läge inför resten av check-in-resan'],
   }),
-  task('app-addons', 'VY: Tillägg', 2060, 340, LANE.webapp, {
+  task('app-addons', 'VY: Tillägg', 2060, 560, LANE.webapp, {
     details: 'Val av tillägg och eventuell connected-produkt innan betalningsbeslut.',
     reads: ['produktkatalog', 'prisregler'],
     writes: ['valda tillägg', 'connected_selected'],
   }),
-  gateway('gw-app-connected', 'Connected valt?', 2320, 334, LANE.webapp, { details: 'Connected-profiler visas bara om produkten valts.' }),
-  task('app-connected', 'VY: Connected-profiler', 2530, 258, LANE.webapp, {
+  gateway('gw-app-connected', 'Connected valt?', 2320, 554, LANE.webapp, { details: 'Connected-profiler visas bara om produkten valts.' }),
+  task('app-connected', 'VY: Connected-profiler', 2530, 478, LANE.webapp, {
     details: 'Fyra lätta profiler med namn och ikonval skapas i pilotens operativa state.',
     writes: ['connected_profile_1..4', 'ikonval', 'connected_profile_status'],
     shownWhen: ['Connected-produkt är vald'],
     skippedWhen: ['Ingen connected-produkt är vald'],
     givesGuest: ['Fyra profiler redo för bandkoppling hos staff'],
   }),
-  gateway('gw-app-payment', 'Betalning krävs?', 2790, 334, LANE.webapp, { details: 'No-payment-vägen är explicit i pilotflödet.' }),
-  task('app-payment', 'VY: Betalning', 3000, 258, LANE.webapp, {
+  gateway('gw-app-payment', 'Betalning krävs?', 2790, 554, LANE.webapp, { details: 'No-payment-vägen är explicit i pilotflödet.' }),
+  task('app-payment', 'VY: Betalning', 3000, 478, LANE.webapp, {
     details: 'Gemensamt betalsteg när totalen är större än 0.',
     writes: ['payment_status', 'payment_reference', 'pending_writeback'],
     shownWhen: ['Totalen är större än 0'],
     skippedWhen: ['Inga nya tillägg valdes eller totalen är 0'],
   }),
-  task('app-confirm', 'VY: Bekräftelse + QR + kod', 3240, 340, LANE.webapp, {
+  task('app-confirm', 'VY: Bekräftelse + QR + kod', 3240, 560, LANE.webapp, {
     details: 'Gemensam slutskärm med QR och kort bokningskod för handoff hos staff.',
     reads: ['confirmation_code', 'token_payload', 'payment_status'],
     givesGuest: ['QR-kod', 'Kort bokningskod', 'Bekräftelse att check-in-flödet är klart'],
   }),
-  task('kiosk-print', 'Skriv ut kvitto / confirmation', 3490, 236, LANE.webapp, {
+  task('kiosk-print', 'Skriv ut kvitto / confirmation', 3490, 456, LANE.webapp, {
     details: 'Valfri kioskavvikelse efter avslutat flöde. Mobilen behöver normalt inte detta steg.',
     shownWhen: ['Kanal = kiosk och utskrift behövs'],
     skippedWhen: ['Kanal = mobil eller ingen utskrift behövs'],
     givesGuest: ['Utskriven confirmation eller kvitto'],
   }),
-  task('app-present', 'VY: Visa QR / bokningskod', 3530, 340, LANE.webapp, {
+  task('app-present', 'VY: Visa QR / bokningskod', 3530, 560, LANE.webapp, {
     details: 'Sista WebApp-vyn före staff-handoff.',
     reads: ['QR payload', 'booking code', 'connected_profile_status'],
     givesGuest: ['Det som ska visas upp hos staff'],
@@ -340,29 +340,29 @@ const webAppNodes = [
 ];
 
 const opsNodes = [
-  service('job-daily', 'Daglig seed', 1120, 594, LANE.ops, {
+  service('job-daily', 'Daglig seed', 1120, 814, LANE.ops, {
     details: 'Laddar dagens Roller-data till den lokala snapshoten tidigt på dagen.',
     cadence: '05:00 daily',
     jobs: ['Hämtar dagens bokningar', 'Upserta snapshot', 'Förbereder SMS-fönster'],
     endpoints: ['Get attendance', 'Get tickets', 'Get payments'],
   }),
-  service('job-delta', 'Delta-synk', 1370, 594, LANE.ops, {
+  service('job-delta', 'Delta-synk', 1370, 814, LANE.ops, {
     details: 'Håller snapshoten färsk utan att lägga bulklogik i användarflödet.',
     cadence: 'Every 5 min',
     jobs: ['Diff mot payload_hash', 'Uppdatera ändrade rader', 'Skriv sync-event'],
     endpoints: ['Get attendance', 'Get tickets', 'Get payments'],
   }),
-  service('job-sms', 'SMS-trigger', 1620, 594, LANE.ops, {
+  service('job-sms', 'SMS-trigger', 1620, 814, LANE.ops, {
     details: 'Skapar token och skickar länk inför ankomst.',
     cadence: 'Every 1 min',
     jobs: ['Hitta bokningar om 30 min', 'Skapa token', 'Skriv sms_outbox'],
   }),
-  service('job-refresh', 'Refresh vid länköppning', 1870, 594, LANE.ops, {
+  service('job-refresh', 'Refresh vid länköppning', 1870, 814, LANE.ops, {
     details: 'Kör live-refresh när länk eller på plats-lookup kräver färsk detalj.',
     cadence: 'On demand',
     endpoints: ['Get detail of a booking'],
   }),
-  service('job-retry', 'Retry för writeback', 2130, 594, LANE.ops, {
+  service('job-retry', 'Retry för writeback', 2130, 814, LANE.ops, {
     details: 'Tar om writeback och redeem om externa anrop fallerar.',
     cadence: 'Retry queue',
     endpoints: ['Edit booking', 'Add transaction record', 'Redeem tickets'],
@@ -370,19 +370,19 @@ const opsNodes = [
 ];
 
 const awsNodes = [
-  service('aws-rdb', 'Aurora PostgreSQL', 180, 776, LANE.aws, {
+  service('aws-rdb', 'Aurora PostgreSQL', 180, 996, LANE.aws, {
     details: 'Primär operativ databas för JumpYard Cloud.',
   }),
-  service('aws-redis', 'Redis (valfri i V1)', 430, 776, LANE.aws, {
+  service('aws-redis', 'Redis (valfri i V1)', 430, 996, LANE.aws, {
     details: 'Kortlivade tokens, sessionscache och rate limiting vid behov.',
   }),
-  service('aws-s3', 'S3 rå-payloads', 180, 886, LANE.aws, {
+  service('aws-s3', 'S3 rå-payloads', 180, 1106, LANE.aws, {
     details: 'Rå Roller-payloads, exportfiler och senare analysdump.',
   }),
-  service('aws-sqs', 'SQS / EventBridge', 430, 886, LANE.aws, {
+  service('aws-sqs', 'SQS / EventBridge', 430, 1106, LANE.aws, {
     details: 'Köar SMS, retryjobb och andra asynkrona steg.',
   }),
-  store('store-snapshot', 'Aurora / Roller Snapshot', 960, 748, LANE.aws, {
+  store('store-snapshot', 'Aurora / Roller Snapshot', 960, 968, LANE.aws, {
     summary: 'Lokal snapshot av Roller-bokningar, tickets, produkter och betalningar.',
     summaryItems: ['bookings', 'booking_tickets', 'booking_products'],
     tables: ['bookings', 'booking_tickets', 'booking_products', 'booking_payments'],
@@ -394,7 +394,7 @@ const awsNodes = [
     endpoints: ['Get attendance', 'Get tickets', 'Get payments', 'Get detail of a booking'],
     contains: ['Bokning', 'Tickets per booking', 'Produktsammanfattning', 'Betalningssnapshot'],
   }),
-  store('store-operational', 'Aurora / Operativ state', 1260, 748, LANE.aws, {
+  store('store-operational', 'Aurora / Operativ state', 1260, 968, LANE.aws, {
     summary: 'Pilotens egen state för safety, token, check-in, connected-profiler och handoff.',
     summaryItems: ['booking_operational_state', 'checkin_tokens', 'connected_profile_drafts'],
     tables: ['booking_operational_state', 'checkin_tokens', 'sms_outbox', 'guest_profiles', 'connected_profile_drafts'],
@@ -407,7 +407,7 @@ const awsNodes = [
     endpoints: ['Get products', 'Booking costs', 'Edit booking', 'Add transaction record', 'Redeem tickets'],
     contains: ['Operativ status', 'Tokens', 'SMS-logg', 'Lätta profilutkast för connected'],
   }),
-  store('store-events', 'Aurora / Event & observability', 1560, 748, LANE.aws, {
+  store('store-events', 'Aurora / Event & observability', 1560, 968, LANE.aws, {
     summary: 'Append-only eventspår och sync-observability för pilotens drift.',
     summaryItems: ['booking_events', 'sync_runs', 'error_summary'],
     tables: ['booking_events', 'sync_runs'],
@@ -417,7 +417,7 @@ const awsNodes = [
     jobs: ['Daglig seed', 'Delta-synk', 'Retry för writeback'],
     contains: ['Visit events', 'SMS-händelser', 'Sync-resultat', 'Felspår'],
   }),
-  store('store-future', 'Connected experience senare', 1860, 748, LANE.aws, {
+  store('store-future', 'Connected experience senare', 1860, 968, LANE.aws, {
     future: true,
     statusTag: 'Senare',
     summary: 'Framtida full session- och device-modell, skild från pilotens lätta profilutkast.',
@@ -430,36 +430,36 @@ const awsNodes = [
 ];
 
 const rollerNodes = [
-  service('roller-bulk', 'Get attendance / Get tickets / Get payments', 980, 1072, LANE.roller, {
+  service('roller-bulk', 'Get attendance / Get tickets / Get payments', 980, 1292, LANE.roller, {
     details: 'Bulk- och snapshotsync för ops jobben.',
     endpoints: ['Get attendance', 'Get tickets', 'Get payments'],
   }),
-  service('roller-booking', 'Get detail of a booking', 1320, 1072, LANE.roller, {
+  service('roller-booking', 'Get detail of a booking', 1320, 1292, LANE.roller, {
     details: 'Live-detail när bokning eller lookup behöver en färsk källa.',
     endpoints: ['Get detail of a booking'],
   }),
-  service('roller-products', 'Get products / Booking costs', 1660, 1072, LANE.roller, {
+  service('roller-products', 'Get products / Booking costs', 1660, 1292, LANE.roller, {
     details: 'Produktkatalog och kostnadsberäkning för tillägg och connected.',
     endpoints: ['Get products', 'Booking costs'],
   }),
-  service('roller-writeback', 'Edit booking / Add transaction record', 2000, 1072, LANE.roller, {
+  service('roller-writeback', 'Edit booking / Add transaction record', 2000, 1292, LANE.roller, {
     details: 'Writeback till Roller efter betalning och tillägg.',
     endpoints: ['Edit booking', 'Add transaction record'],
   }),
-  service('roller-redeem', 'Redeem tickets', 2340, 1072, LANE.roller, {
+  service('roller-redeem', 'Redeem tickets', 2340, 1292, LANE.roller, {
     details: 'Kritisk slutpunkt när staff slutför handoff i piloten.',
     endpoints: ['Redeem tickets'],
   }),
 ];
 
 const staffNodes = [
-  task('staff-assist', 'Assisterad fallback', 1760, 1292, LANE.staff, {
+  task('staff-assist', 'Assisterad fallback', 1760, 262, LANE.staff, {
     details: 'Används vid mismatch, saknad kod eller andra undantag.',
   }),
-  task('staff-manual', 'Manuell kontroll', 1990, 1292, LANE.staff, {
+  task('staff-manual', 'Manuell kontroll', 1990, 262, LANE.staff, {
     details: 'Staff kan kontrollera bokning manuellt innan utlämning eller alternativ hantering.',
   }),
-  task('staff-handoff', 'Utlämning hos staff', 2220, 1292, LANE.staff, {
+  task('staff-handoff', 'Utlämning hos staff', 2220, 262, LANE.staff, {
     details: 'Piloten avslutas hos staff efter att check-in-flödet är klart.',
     why: 'Staff verifierar QR-kod eller bokningskod, ger ut tillägg och kopplar Connected Experience-band till profilerna från check-in-flödet.',
     reads: ['Bekräftad bokning', 'QR-kod eller bokningskod', 'Connected-profiler från operativ state'],
@@ -468,7 +468,7 @@ const staffNodes = [
     staffVerifies: ['QR-kod', 'Bokningskod'],
     endpoints: ['Redeem tickets'],
   }),
-  event('staff-api-end', 'Manuell åtgärd klar', 'end', 2510, 1304, LANE.staff, {
+  event('staff-api-end', 'Manuell åtgärd klar', 'end', 2510, 274, LANE.staff, {
     details: 'Fallbackgrenen avslutas här när normalen inte kunde användas.',
   }),
 ];
