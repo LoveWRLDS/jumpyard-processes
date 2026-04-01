@@ -1106,7 +1106,7 @@ function sanitizeEdgeForStorage(edge: any, nodesOrLookup?: any[] | Map<string, a
 
 // ─── Persistence ──────────────────────────────────────────────────────────────
 
-const FLOW_SCHEMA_VERSION = '2026-03-cloud-lane-swap-v8';
+const FLOW_SCHEMA_VERSION = '2026-04-guest-onsite-clarity-v2';
 const STORAGE_NODES = `jy-bpmn-nodes:${FLOW_SCHEMA_VERSION}`;
 const STORAGE_EDGES = `jy-bpmn-edges:${FLOW_SCHEMA_VERSION}`;
 const STORAGE_LANGUAGE = 'jy-bpmn-language';
