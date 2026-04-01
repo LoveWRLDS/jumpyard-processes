@@ -483,9 +483,27 @@ type RollerApiReference = {
 };
 
 const ROLLER_API_REFERENCES: Record<string, RollerApiReference> = {
+  'Get bookings': {
+    name: 'Get bookings',
+    docUrl: 'https://docs.roller.app/docs/roller-api/15e02538d6f25-get-bookings',
+    docLabel: 'Dokumentation',
+    docStatus: 'official',
+  },
+  'Get customers': {
+    name: 'Get customers',
+    docUrl: 'https://docs.roller.app/docs/roller-api/67bddadddf571-get-customers',
+    docLabel: 'Dokumentation',
+    docStatus: 'official',
+  },
   'Get detail of a booking': {
     name: 'Get detail of a booking',
     docUrl: 'https://docs.roller.app/docs/rest-api/olt8a8nxs75ev',
+    docLabel: 'Dokumentation',
+    docStatus: 'official',
+  },
+  'Get customer detail': {
+    name: 'Get customer detail',
+    docUrl: 'https://docs.roller.app/docs/rest-api/rx9yreablf0rn-get-customer-detail',
     docLabel: 'Dokumentation',
     docStatus: 'official',
   },
@@ -509,6 +527,12 @@ const ROLLER_API_REFERENCES: Record<string, RollerApiReference> = {
   },
   'Create webhook (optional)': {
     name: 'Create webhook (optional)',
+    docUrl: 'https://docs.roller.app/docs/rest-api/3a934c551891e-create-webhook',
+    docLabel: 'Dokumentation',
+    docStatus: 'official',
+  },
+  'Booking webhook': {
+    name: 'Booking webhook',
     docUrl: 'https://docs.roller.app/docs/rest-api/3a934c551891e-create-webhook',
     docLabel: 'Dokumentation',
     docStatus: 'official',
@@ -549,9 +573,9 @@ const ROLLER_API_REFERENCES: Record<string, RollerApiReference> = {
 const ROLLER_API_STAGE_MAP = [
   {
     priority: 'CRITICAL',
-    stage: 'Länköppning och live-refresh',
-    endpoints: ['Get detail of a booking'],
-    desc: 'Används när SMS-länk eller token öppnas och när snapshoten är för gammal för ett säkert beslut.',
+    stage: 'Webhook intake och enrichment',
+    endpoints: ['Booking webhook', 'Get detail of a booking', 'Get customer detail'],
+    desc: 'Booking webhook signalerar sena bokningar och uppdateringar, medan booking- och customer-detail berikar lokal state för SMS och lookup.',
   },
   {
     priority: 'CRITICAL',
@@ -573,9 +597,15 @@ const ROLLER_API_STAGE_MAP = [
   },
   {
     priority: 'HIGH',
-    stage: 'Bulk-sync och optional webhook',
-    endpoints: ['Get attendance', 'Get tickets', 'Get payments', 'Create webhook (optional)'],
-    desc: 'Driver daily seed, delta sync och eventuell extra bekräftelse utanför happy path.',
+    stage: 'Daglig seed för snapshot och kundcache',
+    endpoints: ['Get bookings', 'Get tickets', 'Get payments', 'Get customers'],
+    desc: 'Get bookings, Get tickets och Get payments bygger dagens snapshot, medan Get customers ger lokal kundcache och telefonnummer för SMS.',
+  },
+  {
+    priority: 'HIGH',
+    stage: 'Ankomst- och redeem-avstämning',
+    endpoints: ['Get attendance'],
+    desc: 'Get attendance visar vad som faktiskt checkats in när booking items redeemas och bör hållas separat från dagens seed och webhook-flöde.',
   },
 ] as const;
 
@@ -1106,7 +1136,7 @@ function sanitizeEdgeForStorage(edge: any, nodesOrLookup?: any[] | Map<string, a
 
 // ─── Persistence ──────────────────────────────────────────────────────────────
 
-const FLOW_SCHEMA_VERSION = '2026-04-guest-onsite-clarity-v2';
+const FLOW_SCHEMA_VERSION = '2026-04-webhook-enrichment-v1';
 const STORAGE_NODES = `jy-bpmn-nodes:${FLOW_SCHEMA_VERSION}`;
 const STORAGE_EDGES = `jy-bpmn-edges:${FLOW_SCHEMA_VERSION}`;
 const STORAGE_LANGUAGE = 'jy-bpmn-language';
@@ -3264,3 +3294,4 @@ export default function App() {
     </div>
   );
 }
+

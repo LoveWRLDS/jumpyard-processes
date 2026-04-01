@@ -742,7 +742,7 @@ export const pilotNodes = [
     "data": {
       "label": "Köp biljett på plats",
       "lane": "WebApp",
-      "details": "Detta ersätter inte bokning hemma på webbplatsen. Steget är bara för gäster som redan är i parken och visar lediga tider cirka 1?2 timmar framåt.",
+      "details": "Detta ersätter inte bokning hemma på webbplatsen. Steget är bara för gäster som redan är i parken och visar lediga tider cirka 1–2 timmar framåt.",
       "writes": [
         "walk_in_purchase",
         "nya deltagare",
@@ -1033,6 +1033,7 @@ export const pilotNodes = [
     "selected": false,
     "dragging": false
   },
+  
   {
     "id": "job-daily",
     "type": "service",
@@ -1043,17 +1044,20 @@ export const pilotNodes = [
     "data": {
       "label": "Daglig seed",
       "lane": "Ops jobs",
-      "details": "Laddar dagens Roller-data till den lokala snapshoten tidigt på dagen.",
+      "details": "Seedar dagens bokningar, tickets, payments och customers till lokal snapshot och kundcache innan parken öppnar.",
       "cadence": "05:00 daily",
       "jobs": [
-        "Hämtar dagens bokningar",
-        "Upserta snapshot",
-        "Förbereder SMS-fönster"
+        "Hämtar bokningar",
+        "Hämtar tickets",
+        "Hämtar payments",
+        "Hämtar customers",
+        "Upsertar snapshot"
       ],
       "endpoints": [
-        "Get attendance",
+        "Get bookings",
         "Get tickets",
-        "Get payments"
+        "Get payments",
+        "Get customers"
       ]
     },
     "measured": {
@@ -1063,6 +1067,7 @@ export const pilotNodes = [
     "selected": false,
     "dragging": false
   },
+  
   {
     "id": "job-delta",
     "type": "service",
@@ -1071,19 +1076,17 @@ export const pilotNodes = [
       "y": 1085.5668377166778
     },
     "data": {
-      "label": "Delta-synk",
+      "label": "Booking webhook intake",
       "lane": "Ops jobs",
-      "details": "Håller snapshoten färsk utan att lägga bulklogik i användarflödet.",
-      "cadence": "Every 5 min",
+      "details": "Tar emot booking-webhooks under dagen och skapar ett enrich-underlag i Cloud i stället för Data API-polling.",
+      "cadence": "On event",
       "jobs": [
-        "Diff mot payload_hash",
-        "Uppdatera ändrade rader",
-        "Skriv sync-event"
+        "Ta emot Created / Updated / Cancelled",
+        "Spara webhook-event",
+        "Markera pending enrichment"
       ],
       "endpoints": [
-        "Get attendance",
-        "Get tickets",
-        "Get payments"
+        "Booking webhook"
       ]
     },
     "measured": {
@@ -1094,10 +1097,68 @@ export const pilotNodes = [
     "dragging": false
   },
   {
-    "id": "job-sms",
+    "id": "job-enrich",
     "type": "service",
     "position": {
       "x": 1614.3778918111186,
+      "y": 1084.1613106694574
+    },
+    "data": {
+      "label": "Webhook enrichment",
+      "lane": "Ops jobs",
+      "details": "Berikar sena bokningar med exakt booking-state och kundkontakt efter webhooken.",
+      "cadence": "On event",
+      "jobs": [
+        "Hämta booking detail",
+        "Hämta customer detail",
+        "Upserta snapshot + kundkontakt"
+      ],
+      "endpoints": [
+        "Get detail of a booking",
+        "Get customer detail"
+      ]
+    },
+    "measured": {
+      "width": 220,
+      "height": 104
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
+    "id": "job-attendance",
+    "type": "service",
+    "position": {
+      "x": 1943.3778918111186,
+      "y": 1084.1613106694574
+    },
+    "data": {
+      "label": "Ankomstavstämning",
+      "lane": "Ops jobs",
+      "details": "Hämtar faktiska arrivals och redeemade biljetter för avstämning och support, inte för live-sync.",
+      "cadence": "Dagligen / vid behov",
+      "jobs": [
+        "Hämtar redeemade ankomster",
+        "Fångar externa check-ins",
+        "Skriver avstämningshändelser"
+      ],
+      "endpoints": [
+        "Get attendance"
+      ]
+    },
+    "measured": {
+      "width": 220,
+      "height": 104
+    },
+    "selected": false,
+    "dragging": false
+  },
+
+  {
+    "id": "job-sms",
+    "type": "service",
+    "position": {
+      "x": 2278.8516737562525,
       "y": 1084.1613106694574
     },
     "data": {
@@ -1118,11 +1179,12 @@ export const pilotNodes = [
     "selected": false,
     "dragging": false
   },
+  
   {
     "id": "job-refresh",
     "type": "service",
     "position": {
-      "x": 1953.8516737562525,
+      "x": 2601.4807830581235,
       "y": 1083.6712423191495
     },
     "data": {
@@ -1141,11 +1203,12 @@ export const pilotNodes = [
     "selected": false,
     "dragging": false
   },
+  
   {
     "id": "job-retry",
     "type": "service",
     "position": {
-      "x": 2276.4807830581235,
+      "x": 2924.4807830581235,
       "y": 1084.8916804506885
     },
     "data": {
@@ -1236,6 +1299,7 @@ export const pilotNodes = [
     },
     "selected": false
   },
+  
   {
     "id": "store-snapshot",
     "type": "database",
@@ -1249,7 +1313,7 @@ export const pilotNodes = [
       "collapsed": true,
       "expandLabel": "Expandera databas",
       "collapseLabel": "Fäll ihop databas",
-      "summary": "Lokal snapshot av Roller-bokningar, tickets, produkter och betalningar.",
+      "summary": "Lokal snapshot av Roller-bokningar, tickets, produkter och betalningar för dagens operativa flöde.",
       "summaryItems": [
         "bookings",
         "booking_tickets",
@@ -1262,20 +1326,20 @@ export const pilotNodes = [
         "booking_payments"
       ],
       "keyFields": [
-        "roller_booking_ref",
+        "booking_status",
+        "booking_modified_date",
         "ticket_ids",
-        "payment_status",
         "payload_hash",
         "last_seen_from_roller_at"
       ],
-      "writePattern": "Upsertas av daily seed, delta sync och link-open refresh.",
+      "writePattern": "Upsertas av daily seed, webhook enrichment och link-open refresh. Daily seed bygger basen, webhooken fyller på sena bokningar.",
       "reads": [
         "WebApp: VY: Bokning & deltagare",
         "WebApp: Hitta befintlig bokning"
       ],
       "writes": [
         "Ops jobs: daily seed",
-        "Ops jobs: delta sync",
+        "Ops jobs: webhook enrichment",
         "Ops jobs: link-open refresh"
       ],
       "usedBy": [
@@ -1284,10 +1348,11 @@ export const pilotNodes = [
         "Staff validering"
       ],
       "endpoints": [
-        "Get attendance",
+        "Get bookings",
         "Get tickets",
         "Get payments",
-        "Get detail of a booking"
+        "Get detail of a booking",
+        "Booking webhook"
       ],
       "contains": [
         "Bokning",
@@ -1316,7 +1381,7 @@ export const pilotNodes = [
       "collapsed": true,
       "expandLabel": "Expandera databas",
       "collapseLabel": "Fäll ihop databas",
-      "summary": "Pilotens egen state för safety, token, check-in, connected-profiler och handoff.",
+      "summary": "Pilotens egen state för safety, token, check-in, connected-profiler, handoff och kundkontakt.",
       "summaryItems": [
         "booking_operational_state",
         "checkin_tokens",
@@ -1336,7 +1401,7 @@ export const pilotNodes = [
         "safety_status",
         "connected_profile_status"
       ],
-      "writePattern": "Skrivs av WebApp, staff-handoff och SMS-jobb. Läser inför redeem och utlämning.",
+      "writePattern": "Skrivs av WebApp, webhook enrichment, staff-handoff och SMS-jobb. Läser inför SMS, redeem och utlämning.",
       "reads": [
         "WebApp: VY: Safety",
         "WebApp: VY: Tillägg",
@@ -1344,6 +1409,8 @@ export const pilotNodes = [
         "Staff: Utlämning hos staff"
       ],
       "writes": [
+        "Ops jobs: daily seed",
+        "Ops jobs: webhook enrichment",
         "WebApp: Safety",
         "WebApp: Connected-profiler",
         "WebApp: Betalning",
@@ -1361,6 +1428,8 @@ export const pilotNodes = [
         "Utlämning hos staff"
       ],
       "endpoints": [
+        "Get customers",
+        "Get customer detail",
         "Get products",
         "Booking costs",
         "Edit booking",
@@ -1371,6 +1440,7 @@ export const pilotNodes = [
         "Operativ status",
         "Tokens",
         "SMS-logg",
+        "Kundkontakt för SMS",
         "Lätta profilutkast för connected"
       ]
     },
@@ -1381,6 +1451,7 @@ export const pilotNodes = [
     "selected": false,
     "dragging": false
   },
+  
   {
     "id": "store-events",
     "type": "database",
@@ -1394,7 +1465,7 @@ export const pilotNodes = [
       "collapsed": true,
       "expandLabel": "Expandera databas",
       "collapseLabel": "Fäll ihop databas",
-      "summary": "Append-only eventspår och sync-observability för pilotens drift.",
+      "summary": "Append-only eventspår, webhook-intake, attendance-avstämning och sync-observability för pilotens drift.",
       "summaryItems": [
         "booking_events",
         "sync_runs",
@@ -1411,27 +1482,32 @@ export const pilotNodes = [
         "status",
         "error_summary"
       ],
-      "writePattern": "Append-only från WebApp, staff och ops jobs.",
+      "writePattern": "Append-only från WebApp, staff och ops jobs. Webhook-events och attendance synkas hit för drift och avstämning.",
       "usedBy": [
         "Support",
         "Drift",
-        "Funnelanalys"
+        "Check-in-avstämning"
       ],
       "jobs": [
         "Daglig seed",
-        "Delta-synk",
+        "Booking webhook intake",
+        "Webhook enrichment",
+        "Ankomstavstämning",
         "Retry för writeback"
+      ],
+      "endpoints": [
+        "Get attendance"
       ],
       "contains": [
         "Visit events",
-        "SMS-händelser",
+        "Attendance-rader",
         "Sync-resultat",
         "Felspår"
       ]
     },
     "measured": {
       "width": 250,
-      "height": 157
+      "height": 173
     },
     "selected": false,
     "dragging": false
@@ -1480,6 +1556,7 @@ export const pilotNodes = [
     "selected": false,
     "dragging": false
   },
+  
   {
     "id": "roller-bulk",
     "type": "service",
@@ -1488,18 +1565,41 @@ export const pilotNodes = [
       "y": 1318.8773811717847
     },
     "data": {
-      "label": "Get attendance / Get tickets / Get payments",
+      "label": "Get bookings / Get tickets / Get payments / Get customers",
       "lane": "Roller API",
-      "details": "Bulk- och snapshotsync för ops jobben.",
+      "details": "Daglig seed för bokningssnapshot, betalningsledger och lokal kundcache.",
       "endpoints": [
-        "Get attendance",
+        "Get bookings",
         "Get tickets",
-        "Get payments"
+        "Get payments",
+        "Get customers"
       ]
     },
     "measured": {
       "width": 220,
-      "height": 80
+      "height": 96
+    },
+    "selected": false,
+    "dragging": false
+  },
+    {
+    "id": "roller-webhook",
+    "type": "service",
+    "position": {
+      "x": 1406.3965398282976,
+      "y": 1311.5471863067523
+    },
+    "data": {
+      "label": "Booking webhook",
+      "lane": "Roller API",
+      "details": "Skickar Created, Updated och Cancelled för bokningar under dagen.",
+      "endpoints": [
+        "Booking webhook"
+      ]
+    },
+    "measured": {
+      "width": 220,
+      "height": 81
     },
     "selected": false,
     "dragging": false
@@ -1527,10 +1627,32 @@ export const pilotNodes = [
     "dragging": false
   },
   {
-    "id": "roller-products",
+    "id": "roller-customer",
     "type": "service",
     "position": {
       "x": 1972.75498090804,
+      "y": 1311.5471863067523
+    },
+    "data": {
+      "label": "Get customer detail",
+      "lane": "Roller API",
+      "details": "Hämtar telefon, e-post och övrig kundkontakt för sena bokningar efter webhook.",
+      "endpoints": [
+        "Get customer detail"
+      ]
+    },
+    "measured": {
+      "width": 220,
+      "height": 81
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
+    "id": "roller-products",
+    "type": "service",
+    "position": {
+      "x": 2256.75498090804,
       "y": 1294.443398288344
     },
     "data": {
@@ -1550,10 +1672,32 @@ export const pilotNodes = [
     "dragging": false
   },
   {
+    "id": "roller-attendance",
+    "type": "service",
+    "position": {
+      "x": 2556.9908031595673,
+      "y": 1311.5471863067523
+    },
+    "data": {
+      "label": "Get attendance",
+      "lane": "Roller API",
+      "details": "Visar vilka booking items som faktiskt har redeemats eller checkats in.",
+      "endpoints": [
+        "Get attendance"
+      ]
+    },
+    "measured": {
+      "width": 220,
+      "height": 81
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
     "id": "roller-writeback",
     "type": "service",
     "position": {
-      "x": 2280.9908031595673,
+      "x": 2848.9908031595673,
       "y": 1299.3301948650321
     },
     "data": {
@@ -2942,10 +3086,41 @@ export const pilotEdges = [
     },
     "zIndex": 0
   },
+  
   {
     "id": "o2",
     "source": "job-delta",
-    "target": "job-sms",
+    "target": "job-enrich",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "o2b",
+    "source": "job-enrich",
+    "target": "job-attendance",
     "type": "smoothstep",
     "markerEnd": {
       "type": "arrowclosed",
@@ -2974,6 +3149,36 @@ export const pilotEdges = [
   },
   {
     "id": "o3",
+    "source": "job-attendance",
+    "target": "job-sms",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+    {
+    "id": "o3b",
     "source": "job-sms",
     "target": "job-refresh",
     "type": "smoothstep",
@@ -3002,7 +3207,7 @@ export const pilotEdges = [
     },
     "zIndex": 0
   },
-  {
+{
     "id": "o4",
     "source": "job-refresh",
     "target": "job-retry",
@@ -3118,10 +3323,11 @@ export const pilotEdges = [
     "targetHandle": "top",
     "zIndex": 0
   },
+  
   {
     "id": "d16",
-    "source": "job-delta",
-    "target": "roller-bulk",
+    "source": "roller-webhook",
+    "target": "job-delta",
     "type": "step",
     "style": {
       "strokeWidth": 1.5,
@@ -3145,25 +3351,70 @@ export const pilotEdges = [
         "color": "#22d3ee"
       },
       "pathMode": "step",
-      "details": "Delta-synk hämtar ändringar under dagen.",
-      "operation": "Sync",
+      "details": "Roller pushar Created, Updated och Cancelled till webhook-intake under dagen.",
+      "operation": "Webhook",
       "fields": [
-        "uppdaterade attendance-rader",
-        "ändrade tickets",
-        "nya payments"
+        "bookingReference",
+        "bookingUniqueId",
+        "eventType",
+        "channel"
       ],
-      "why": "Snapshoten behöver hållas färsk utan att belasta happy path.",
+      "why": "Sena bokningar och uppdateringar ska fångas utan att belasta Data API med tät polling.",
       "edgeHighlighted": false,
       "dimmed": false
     },
-    "sourceHandle": "bottom",
-    "targetHandle": "top",
+    "sourceHandle": "top",
+    "targetHandle": "bottom",
     "zIndex": 0,
     "selected": false
   },
+    {
+    "id": "d16a",
+    "source": "job-attendance",
+    "target": "roller-attendance",
+    "type": "step",
+    "style": {
+      "strokeWidth": 1.5,
+      "stroke": "#22d3ee",
+      "strokeDasharray": "3,5"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#22d3ee"
+    },
+    "data": {
+      "edgeKind": "data",
+      "edgeStyle": "data",
+      "baseStyle": {
+        "strokeWidth": 1.5,
+        "stroke": "#22d3ee",
+        "strokeDasharray": "3,5"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#22d3ee"
+      },
+      "pathMode": "step",
+      "details": "Ankomstavstämningen hämtar faktiska check-ins från Roller under dagen.",
+      "operation": "Sync",
+      "fields": [
+        "bookingReference",
+        "checkInDateTime",
+        "bookingItemPartId",
+        "employeeId"
+      ],
+      "why": "Get attendance ska användas för faktisk ankomst- och redeem-avstämning, inte för dagens seed av väntade gäster.",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "sourceHandle": "bottom-left",
+    "targetHandle": "top-right",
+    "zIndex": 0
+  },
+
   {
     "id": "d16b",
-    "source": "job-delta",
+    "source": "job-attendance",
     "target": "store-events",
     "type": "step",
     "style": {
@@ -3188,15 +3439,15 @@ export const pilotEdges = [
         "color": "#22d3ee"
       },
       "pathMode": "step",
-      "details": "Delta-synk skriver sync-observability och felutfall till eventlagret.",
+      "details": "Ankomstavstämningen skriver redeem- och attendance-observability till eventlagret.",
       "operation": "Skrivning",
       "fields": [
-        "sync_runs",
-        "rows_changed",
-        "error_summary",
-        "booking_synced"
+        "attendance rows",
+        "checkInDateTime",
+        "employeeId",
+        "locationIds"
       ],
-      "why": "Drift och felsökning behöver se att synk-jobben kördes och vad de faktiskt ändrade.",
+      "why": "Drift och support behöver se vad som faktiskt checkats in, även när det skett utanför JumpYards eget flöde.",
       "edgeHighlighted": false,
       "dimmed": false
     },
@@ -3876,6 +4127,7 @@ export const pilotEdges = [
     "zIndex": 0,
     "id": "xy-edge__staff-handoffright-top-guest-endbottom"
   },
+  
   {
     "type": "step",
     "markerEnd": {
@@ -3902,14 +4154,15 @@ export const pilotEdges = [
         "color": "#22d3ee"
       },
       "pathMode": "step",
-      "details": "Daglig seed hämtar dagens Roller-data.",
+      "details": "Daglig seed hämtar bokningar, tickets, payments och customers som behövs inför dagens SMS och check-in.",
       "operation": "Sync",
       "fields": [
-        "attendance",
+        "bookings",
         "tickets",
-        "payments"
+        "payment rows",
+        "customers"
       ],
-      "why": "Skapar dagens första lokala snapshot inför SMS och check-in.",
+      "why": "Bygger dagens operativa snapshot och kundcache före SMS och check-in, i stället för att utgå från redan redeemade arrivals.",
       "edgeHighlighted": false,
       "dimmed": false
     },
@@ -3918,6 +4171,7 @@ export const pilotEdges = [
     "zIndex": 0,
     "id": "xy-edge__job-dailybottom-left-roller-bulktop-left"
   },
+  
   {
     "type": "step",
     "markerEnd": {
@@ -3944,7 +4198,7 @@ export const pilotEdges = [
         "color": "#22d3ee"
       },
       "pathMode": "step",
-      "details": "Daglig seed skriver dagens snapshot till Aurora.",
+      "details": "Daglig seed skriver dagens boknings-, ticket- och payment-snapshot till Aurora.",
       "operation": "Skrivning",
       "fields": [
         "bookings",
@@ -3952,7 +4206,7 @@ export const pilotEdges = [
         "booking_products",
         "booking_payments"
       ],
-      "why": "Pilotens WebApp läser alltid lokal snapshot först.",
+      "why": "WebApp och lookup ska börja från ett lokalt snapshot av väntade gäster, inte från attendance-data.",
       "edgeHighlighted": false,
       "dimmed": false
     },
@@ -3960,6 +4214,49 @@ export const pilotEdges = [
     "targetHandle": "bottom-left",
     "zIndex": 0,
     "id": "xy-edge__job-dailytop-left-store-snapshotbottom-left"
+  },
+  {
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#22d3ee"
+    },
+    "style": {
+      "strokeWidth": 1.5,
+      "stroke": "#22d3ee",
+      "strokeDasharray": "3,5"
+    },
+    "source": "job-daily",
+    "target": "store-operational",
+    "data": {
+      "edgeKind": "data",
+      "edgeStyle": "data",
+      "baseStyle": {
+        "strokeWidth": 1.5,
+        "stroke": "#22d3ee",
+        "strokeDasharray": "3,5"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#22d3ee"
+      },
+      "pathMode": "step",
+      "details": "Daglig seed fyller gästprofiler och kontaktcache som SMS-flödet behöver senare under dagen.",
+      "operation": "Skrivning",
+      "fields": [
+        "guest_profiles",
+        "contactNumber",
+        "email",
+        "customerId"
+      ],
+      "why": "Telefonnummer och kundkontakt ska finnas lokalt innan SMS-triggern börjar jobba mot dagens bokningar.",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "sourceHandle": "top-right",
+    "targetHandle": "bottom-left",
+    "zIndex": 0,
+    "id": "xy-edge__job-dailytop-right-store-operationalbottom-left"
   },
   {
     "type": "step",
@@ -4058,7 +4355,7 @@ export const pilotEdges = [
       "stroke": "#22d3ee",
       "strokeDasharray": "3,5"
     },
-    "source": "staff-handoff",
+    "source": "store-operational",
     "target": "roller-redeem",
     "data": {
       "edgeKind": "data",
@@ -4073,22 +4370,24 @@ export const pilotEdges = [
         "color": "#22d3ee"
       },
       "pathMode": "step",
-      "details": "Staff-handoff triggar redeem när QR-kod eller bokningskod verifierats.",
+      "details": "Operativ state driver redeem till Roller när staff har verifierat QR-kod eller bokningskod.",
       "operation": "Writeback",
       "fields": [
         "ticket_ids",
+        "redeem readiness",
         "redeem request per ticket",
-        "verified handoff context"
+        "verified handoff context",
+        "handoff_completed"
       ],
-      "why": "Piloten är inte klar förrän staff slutfört handoff och check-in i Roller.",
+      "why": "Staff triggar redeem, men cloud ska gå via operativ state innan check-in slutförs i Roller.",
       "edgeHighlighted": false,
       "dimmed": false
     },
-    "sourceHandle": "bottom-right",
+    "sourceHandle": "bottom",
     "targetHandle": "top-right",
     "zIndex": 0,
     "selected": false,
-    "id": "xy-edge__staff-handoffbottom-right-roller-redeemtop-right"
+    "id": "xy-edge__store-operationalbottom-roller-redeemtop-right"
   },
   {
     "type": "step",
@@ -4729,6 +5028,7 @@ export const pilotEdges = [
     "zIndex": 0,
     "id": "xy-edge__staff-handoffbottom-left-store-eventsright-top"
   },
+  
   {
     "type": "step",
     "markerEnd": {
@@ -4741,6 +5041,135 @@ export const pilotEdges = [
       "strokeDasharray": "3,5"
     },
     "source": "job-delta",
+    "target": "store-events",
+    "data": {
+      "edgeKind": "data",
+      "edgeStyle": "data",
+      "baseStyle": {
+        "strokeWidth": 1.5,
+        "stroke": "#22d3ee",
+        "strokeDasharray": "3,5"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#22d3ee"
+      },
+      "pathMode": "step",
+      "details": "Webhook-intake skriver råa booking-events och enrich-status till eventlagret.",
+      "operation": "Skrivning",
+      "fields": [
+        "bookingReference",
+        "eventType",
+        "payload_hash",
+        "pending_enrichment"
+      ],
+      "why": "Cloud behöver spåra sena bokningar och uppdateringar innan de berikas till lokal state.",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "sourceHandle": "top-left",
+    "targetHandle": "bottom-right",
+    "zIndex": 0,
+    "id": "xy-edge__job-deltatop-left-store-eventsbottom-right"
+  },
+  {
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#22d3ee"
+    },
+    "style": {
+      "strokeWidth": 1.5,
+      "stroke": "#22d3ee",
+      "strokeDasharray": "3,5"
+    },
+    "source": "job-enrich",
+    "target": "roller-booking",
+    "data": {
+      "edgeKind": "data",
+      "edgeStyle": "data",
+      "baseStyle": {
+        "strokeWidth": 1.5,
+        "stroke": "#22d3ee",
+        "strokeDasharray": "3,5"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#22d3ee"
+      },
+      "pathMode": "step",
+      "details": "Webhook enrichment hämtar exakt booking-state direkt efter webhooken.",
+      "operation": "Läsning",
+      "fields": [
+        "bookingReference",
+        "bookingUniqueId",
+        "items",
+        "payments"
+      ],
+      "why": "Webhooken är en signal, men booking detail är den auktoritativa sanningen för den sena bokningen.",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "sourceHandle": "bottom-left",
+    "targetHandle": "top",
+    "zIndex": 0,
+    "id": "xy-edge__job-enrichbottom-left-roller-bookingtop"
+  },
+  {
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#22d3ee"
+    },
+    "style": {
+      "strokeWidth": 1.5,
+      "stroke": "#22d3ee",
+      "strokeDasharray": "3,5"
+    },
+    "source": "job-enrich",
+    "target": "roller-customer",
+    "data": {
+      "edgeKind": "data",
+      "edgeStyle": "data",
+      "baseStyle": {
+        "strokeWidth": 1.5,
+        "stroke": "#22d3ee",
+        "strokeDasharray": "3,5"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#22d3ee"
+      },
+      "pathMode": "step",
+      "details": "Webhook enrichment hämtar kundkontakt för att få telefonnummer och SMS-beredskap på sena bokningar.",
+      "operation": "Läsning",
+      "fields": [
+        "customerId",
+        "contactNumber",
+        "email",
+        "acceptMarketingSms"
+      ],
+      "why": "Sena bokningar behöver kundkontakt även om kunden inte fanns i morgonens seed.",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "sourceHandle": "bottom-right",
+    "targetHandle": "top",
+    "zIndex": 0,
+    "id": "xy-edge__job-enrichbottom-right-roller-customertop"
+  },
+  {
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#22d3ee"
+    },
+    "style": {
+      "strokeWidth": 1.5,
+      "stroke": "#22d3ee",
+      "strokeDasharray": "3,5"
+    },
+    "source": "job-enrich",
     "target": "store-snapshot",
     "data": {
       "edgeKind": "data",
@@ -4755,20 +5184,64 @@ export const pilotEdges = [
         "color": "#22d3ee"
       },
       "pathMode": "step",
-      "details": "Delta-synk uppdaterar bara ändrade delar av snapshoten.",
+      "details": "Webhook enrichment skriver den sena bokningen tillbaka till Roller-snapshoten.",
       "operation": "Skrivning",
       "fields": [
-        "payload_hash",
-        "changed rows",
+        "bookings",
+        "booking_tickets",
+        "booking_payments",
         "last_seen_from_roller_at"
       ],
-      "why": "Minskar onödiga fulla omladdningar och håller datan begriplig.",
+      "why": "Sena bokningar ska bli sökbara i lookup och bokningsvyn utan att vänta till nästa dag.",
       "edgeHighlighted": false,
       "dimmed": false
     },
     "sourceHandle": "top-left",
     "targetHandle": "bottom-right",
     "zIndex": 0,
-    "id": "xy-edge__job-deltatop-left-store-snapshotbottom-right"
+    "id": "xy-edge__job-enrichtop-left-store-snapshotbottom-right"
+  },
+  {
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#22d3ee"
+    },
+    "style": {
+      "strokeWidth": 1.5,
+      "stroke": "#22d3ee",
+      "strokeDasharray": "3,5"
+    },
+    "source": "job-enrich",
+    "target": "store-operational",
+    "data": {
+      "edgeKind": "data",
+      "edgeStyle": "data",
+      "baseStyle": {
+        "strokeWidth": 1.5,
+        "stroke": "#22d3ee",
+        "strokeDasharray": "3,5"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#22d3ee"
+      },
+      "pathMode": "step",
+      "details": "Webhook enrichment skriver kundkontakt, sms-beredskap och senaste bookingkontext till operativ state.",
+      "operation": "Skrivning",
+      "fields": [
+        "guest_profiles",
+        "contactNumber",
+        "sms_ready",
+        "latest booking context"
+      ],
+      "why": "SMS-triggern ska kunna jobba helt mot Aurora även för bokningar som kommit in efter daily seed.",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "sourceHandle": "top-right",
+    "targetHandle": "bottom-right",
+    "zIndex": 0,
+    "id": "xy-edge__job-enrichtop-right-store-operationalbottom-right"
   }
 ] as any[];
