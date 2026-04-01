@@ -1,4 +1,4 @@
-// Auto-generated — do not edit by hand
+// Auto-generated ? do not edit by hand
 export const pilotNodes = [
   {
     "id": "pool-guest",
@@ -11,14 +11,14 @@ export const pilotNodes = [
       "label": "Gäst",
       "color": "#f59e0b",
       "widthPx": 4600,
-      "heightPx": 170
+      "heightPx": 230
     },
     "draggable": true,
     "selectable": true,
     "zIndex": -3,
     "measured": {
       "width": 4600,
-      "height": 170
+      "height": 230
     }
   },
   {
@@ -26,7 +26,7 @@ export const pilotNodes = [
     "type": "pool",
     "position": {
       "x": 56,
-      "y": 210
+      "y": 270
     },
     "data": {
       "label": "Staff / parkpersonal",
@@ -47,7 +47,7 @@ export const pilotNodes = [
     "type": "pool",
     "position": {
       "x": 56,
-      "y": 430
+      "y": 490
     },
     "data": {
       "label": "WebApp",
@@ -68,7 +68,7 @@ export const pilotNodes = [
     "type": "pool",
     "position": {
       "x": 56,
-      "y": 790
+      "y": 850
     },
     "data": {
       "label": "JumpYard Cloud",
@@ -89,7 +89,7 @@ export const pilotNodes = [
     "type": "pool",
     "position": {
       "x": 56,
-      "y": 1250
+      "y": 1310
     },
     "data": {
       "label": "Roller",
@@ -115,7 +115,7 @@ export const pilotNodes = [
     "data": {
       "label": "Gäst",
       "width": "4600px",
-      "heightPx": 170,
+      "heightPx": 230,
       "index": 0,
       "poolId": "pool-guest"
     },
@@ -124,7 +124,7 @@ export const pilotNodes = [
     "zIndex": -2,
     "measured": {
       "width": 4600,
-      "height": 170
+      "height": 230
     },
     "selected": true
   },
@@ -133,7 +133,7 @@ export const pilotNodes = [
     "type": "lane",
     "position": {
       "x": 56,
-      "y": 210
+      "y": 270
     },
     "data": {
       "label": "Staff / parkpersonal",
@@ -156,7 +156,7 @@ export const pilotNodes = [
     "type": "lane",
     "position": {
       "x": 56,
-      "y": 430
+      "y": 490
     },
     "data": {
       "label": "WebApp",
@@ -179,7 +179,7 @@ export const pilotNodes = [
     "type": "lane",
     "position": {
       "x": 56,
-      "y": 1070
+      "y": 1130
     },
     "data": {
       "label": "Ops jobs",
@@ -202,7 +202,7 @@ export const pilotNodes = [
     "type": "lane",
     "position": {
       "x": 56,
-      "y": 790
+      "y": 850
     },
     "data": {
       "label": "AWS + Aurora",
@@ -225,7 +225,7 @@ export const pilotNodes = [
     "type": "lane",
     "position": {
       "x": 56,
-      "y": 1250
+      "y": 1310
     },
     "data": {
       "label": "Roller API",
@@ -248,15 +248,13 @@ export const pilotNodes = [
     "type": "event",
     "position": {
       "x": 140,
-      "y": 58
+      "y": 88
     },
     "data": {
-      "label": "Bokning skapad",
+      "label": "Besök planeras",
       "type": "start",
       "lane": "Gäst",
-      "details": "Piloten startar när en bokning redan finns.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Resan börjar antingen hemma på befintlig webbplats eller på plats i parken."
     },
     "measured": {
       "width": 48,
@@ -264,132 +262,242 @@ export const pilotNodes = [
     }
   },
   {
+    "id": "guest-booked",
+    "type": "gateway",
+    "position": {
+      "x": 280,
+      "y": 78
+    },
+    "data": {
+      "label": "Bokat hemma redan?",
+      "lane": "Gäst",
+      "details": "Piloten ska tydligt skilja mellan bokning hemma as-is och on-site-ingång i parken."
+    },
+    "measured": {
+      "width": 64,
+      "height": 64
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
+    "id": "guest-home-book",
+    "type": "task",
+    "position": {
+      "x": 430,
+      "y": 34
+    },
+    "data": {
+      "label": "Boka hemma as-is på webbplatsen",
+      "lane": "Gäst",
+      "details": "Bokningen sker fortsatt på befintlig webbplats hemma. Efteråt kan gästen antingen använda SMS-länken eller starta på plats via QR eller kiosk."
+    },
+    "measured": {
+      "width": 250,
+      "height": 43
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
+    "id": "guest-sms",
+    "type": "task",
+    "position": {
+      "x": 760,
+      "y": 34
+    },
+    "data": {
+      "label": "Få SMS-länk med token",
+      "lane": "Gäst",
+      "details": "Inför ankomst skickas en personlig SMS-länk, men den är inte den enda vägen in i check-in-flödet."
+    },
+    "measured": {
+      "width": 185,
+      "height": 43
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
+    "id": "guest-onsite-entry",
+    "type": "task",
+    "position": {
+      "x": 500,
+      "y": 138
+    },
+    "data": {
+      "label": "Skanna park-QR på ställning eller välj kiosk",
+      "lane": "Gäst",
+      "details": "Samma on-site-ingång används både för gäster utan bokning och för gäster som redan bokat hemma men väljer QR eller kiosk i stället för SMS-länken."
+    },
+    "measured": {
+      "width": 282,
+      "height": 43
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
+    "id": "guest-onsite-choice",
+    "type": "task",
+    "position": {
+      "x": 910,
+      "y": 138
+    },
+    "data": {
+      "label": "Hitta bokning eller köp på plats",
+      "lane": "Gäst",
+      "details": "På plats kan gästen hitta en befintlig bokning eller köpa en närliggande tid direkt i parkflödet."
+    },
+    "measured": {
+      "width": 220,
+      "height": 43
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
+    "id": "guest-entry-choice",
+    "type": "gateway",
+    "position": {
+      "x": 1010,
+      "y": 24
+    },
+    "data": {
+      "label": "Öppna check-in hur?",
+      "lane": "Gäst",
+      "details": "Gästen kan ha bokat hemma och ändå välja att använda parkens QR eller kiosk i stället för SMS-länken."
+    },
+    "measured": {
+      "width": 64,
+      "height": 64
+    },
+    "selected": false,
+    "dragging": false
+  },
+  {
     "id": "guest-open",
     "type": "task",
     "position": {
-      "x": 240,
-      "y": 46
+      "x": 1170,
+      "y": 84
     },
     "data": {
-      "label": "Check-in startar",
+      "label": "Gå in i check-in-flödet",
       "lane": "Gäst",
-      "details": "Gästen går in i check-in-flödet via länk, QR eller kiosk.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Flödet kan starta via personlig SMS-länk, via QR eller kiosk med befintlig bokning, eller efter köp på plats."
     },
     "measured": {
-      "width": 151,
+      "width": 192,
       "height": 43
-    }
+    },
+    "selected": false,
+    "dragging": false
   },
   {
     "id": "guest-review",
     "type": "task",
     "position": {
-      "x": 470,
-      "y": 46
+      "x": 1430,
+      "y": 84
     },
     "data": {
       "label": "Granska bokning",
       "lane": "Gäst",
-      "details": "Gästen ser bokning, deltagare och vad som redan ingår.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "När bokning finns ser gästen deltagare och vad som redan ingår."
     },
     "measured": {
       "width": 150,
       "height": 43
-    }
+    },
+    "selected": false,
+    "dragging": false
   },
   {
     "id": "guest-safety",
     "type": "task",
     "position": {
-      "x": 720,
-      "y": 46
+      "x": 1690,
+      "y": 84
     },
     "data": {
       "label": "Slutför safety",
       "lane": "Gäst",
-      "details": "Safety slutförs innan bekräftelse och handoff.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Safety slutförs innan bekräftelse och handoff."
     },
     "measured": {
       "width": 136,
       "height": 43
-    }
+    },
+    "selected": false,
+    "dragging": false
   },
   {
     "id": "guest-addons",
     "type": "task",
     "position": {
-      "x": 980,
-      "y": 46
+      "x": 1960,
+      "y": 70
     },
     "data": {
       "label": "Välj tillägg och connected",
       "lane": "Gäst",
-      "details": "Samma huvudsteg oavsett om gästen kommer via mobil eller kiosk.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Samma huvudsteg oavsett om gästen kommer via mobil eller kiosk."
     },
     "measured": {
       "width": 221,
       "height": 43
-    }
+    },
+    "selected": false,
+    "dragging": false
   },
   {
     "id": "guest-pay",
     "type": "task",
     "position": {
-      "x": 1280,
-      "y": 46
+      "x": 2255,
+      "y": 70
     },
     "data": {
       "label": "Betala vid behov",
       "lane": "Gäst",
-      "details": "Hoppas över när totalen är 0 efter tillägg och connected-val.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Hoppas över när totalen är 0 efter tillägg och connected-val."
     },
     "measured": {
       "width": 144,
       "height": 43
-    }
+    },
+    "selected": false
   },
   {
     "id": "guest-confirm",
     "type": "task",
     "position": {
-      "x": 1540,
-      "y": 46
+      "x": 2515,
+      "y": 70
     },
     "data": {
       "label": "Se bekräftelse + QR + kod",
       "lane": "Gäst",
-      "details": "Bekräftelsen används sedan vid handoff hos staff.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Bekräftelsen används sedan vid handoff hos staff."
     },
     "measured": {
       "width": 199,
       "height": 43
-    }
+    },
+    "selected": false
   },
   {
     "id": "guest-arrive",
     "type": "task",
     "position": {
-      "x": 2475.0178887326174,
-      "y": 48.027919160162895
+      "x": 2805,
+      "y": 84
     },
     "data": {
       "label": "Anländ till staff",
       "lane": "Gäst",
-      "details": "Piloten avslutas inte i self-service. Staff tar över sista steget.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Piloten avslutas inte i self-service. Staff tar över sista steget."
     },
     "measured": {
       "width": 148,
@@ -403,7 +511,7 @@ export const pilotNodes = [
     "type": "task",
     "position": {
       "x": 3953.8013797141098,
-      "y": 53.96218399010161
+      "y": 84
     },
     "data": {
       "label": "Visa QR-kod eller bokningskod hos staff",
@@ -416,9 +524,7 @@ export const pilotNodes = [
       "staffVerifies": [
         "QR-kod",
         "Bokningskod"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 230,
@@ -431,16 +537,14 @@ export const pilotNodes = [
     "id": "guest-end",
     "type": "event",
     "position": {
-      "x": 4316.703798772467,
-      "y": 47.77992718325875
+      "x": 4314.445000178185,
+      "y": 85
     },
     "data": {
       "label": "Redo för park",
       "type": "end",
       "lane": "Gäst",
-      "details": "Parkresan fortsätter efter att staff har slutfört handoff.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Parkresan fortsätter efter att staff har slutfört handoff."
     },
     "measured": {
       "width": 48,
@@ -453,13 +557,13 @@ export const pilotNodes = [
     "id": "app-start",
     "type": "task",
     "position": {
-      "x": 182.96501715033222,
-      "y": 532.7307753545732
+      "x": 180,
+      "y": 592
     },
     "data": {
       "label": "VY: Start / länk",
       "lane": "WebApp",
-      "details": "Gemensam ingång för mobil PWA och kiosk på plats.",
+      "details": "Gemensam ingång för SMS-länk, park-QR och kiosk på plats.",
       "reads": [
         "checkin_token",
         "channel_hint",
@@ -467,17 +571,15 @@ export const pilotNodes = [
       ],
       "shownWhen": [
         "SMS-länk öppnas",
-        "QR-kod vid park skannas",
+        "Parkens QR-ställning skannas",
         "Kiosk startas på plats"
       ],
       "givesGuest": [
-        "Tydlig startpunkt för samma check-in-flöde"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+        "Tydlig startpunkt för samma check-in- eller köpflöde"
+      ]
     },
     "measured": {
-      "width": 136,
+      "width": 145,
       "height": 43
     },
     "selected": false,
@@ -487,15 +589,13 @@ export const pilotNodes = [
     "id": "gw-channel",
     "type": "gateway",
     "position": {
-      "x": 390.650330722228,
-      "y": 522.1014024983649
+      "x": 390,
+      "y": 582
     },
     "data": {
-      "label": "Kanal?",
+      "label": "Hur öppnas flödet?",
       "lane": "WebApp",
-      "details": "Kanalvalet sker tidigt. Därefter är huvudflödet gemensamt.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "SMS-länk är snabbspåret. Park-QR och kiosk går in i samma on-site-logik."
     },
     "measured": {
       "width": 64,
@@ -508,24 +608,25 @@ export const pilotNodes = [
     "id": "app-mobile",
     "type": "task",
     "position": {
-      "x": 539.7148957064657,
-      "y": 472.77529911068615
+      "x": 610,
+      "y": 516
     },
     "data": {
-      "label": "Mobil i telefonens PWA",
+      "label": "SMS-länk med token",
       "lane": "WebApp",
-      "details": "Mobilspåret avgör om gästen kommer via personlig SMS-länk eller parkens allmänna QR.",
+      "details": "Personlig länk som skickas cirka 30 min före och öppnar bokningsvyn direkt när gästen redan bokat hemma.",
       "shownWhen": [
-        "Gästen använder egen telefon"
+        "Gästen har redan bokat hemma och öppnar sin personliga länk"
       ],
       "skippedWhen": [
-        "Gästen väljer kiosk på plats"
+        "Gästen startar i parken via QR eller kiosk"
       ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      "givesGuest": [
+        "Direkt väg in i bokningen utan extra lookup"
+      ]
     },
     "measured": {
-      "width": 185,
+      "width": 176,
       "height": 43
     },
     "selected": false,
@@ -533,54 +634,24 @@ export const pilotNodes = [
   },
   {
     "id": "gw-mobile-entry",
-    "type": "gateway",
-    "position": {
-      "x": 789.4793473592185,
-      "y": 462.77092613206344
-    },
-    "data": {
-      "label": "Öppnad via?",
-      "lane": "WebApp",
-      "details": "SMS-länk med token går direkt in i bokningen. Park-QR går via en allmän sida och sedan lookup.",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "measured": {
-      "width": 64,
-      "height": 64
-    },
-    "selected": false,
-    "dragging": false
-  },
-  {
-    "id": "app-onsite",
     "type": "task",
     "position": {
-      "x": 929.5544388181429,
-      "y": 472.32023919061754
+      "x": 610,
+      "y": 604
     },
     "data": {
-      "label": "Park-QR / allmän sida",
+      "label": "Park-QR på ställning",
       "lane": "WebApp",
-      "details": "Publik startsida från parkens QR där gästen kan välja att hitta befintlig bokning eller köpa på plats.",
-      "reads": [
-        "venue context",
-        "channel = park_qr"
-      ],
+      "details": "Bekvämt entrypoint i parken för gäster som inte bokat hemma eller inte checkat in ännu.",
       "shownWhen": [
-        "Park-QR öppnas i mobilen"
-      ],
-      "skippedWhen": [
-        "SMS-länk med token används"
+        "Gästen skannar parkens QR-ställning"
       ],
       "givesGuest": [
-        "Tydlig start med val mellan befintlig bokning och köp på plats"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+        "Tydlig on-site-start för samma boknings- eller köpflöde"
+      ]
     },
     "measured": {
-      "width": 178,
+      "width": 180,
       "height": 43
     },
     "selected": false,
@@ -590,21 +661,19 @@ export const pilotNodes = [
     "id": "kiosk-entry",
     "type": "task",
     "position": {
-      "x": 541.2500154241886,
-      "y": 599.5000004896567
+      "x": 610,
+      "y": 692
     },
     "data": {
       "label": "Kiosk på plats",
       "lane": "WebApp",
-      "details": "Kiosk är en alternativ ingång till samma WebApp-flöde.",
+      "details": "Alternativ on-site-ingång till samma WebApp-flöde för gäster som redan är i parken.",
       "shownWhen": [
         "Gästen väljer kiosk i parken"
       ],
       "skippedWhen": [
         "Gästen använder egen telefon"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 129,
@@ -617,15 +686,13 @@ export const pilotNodes = [
     "id": "gw-kiosk-existing",
     "type": "gateway",
     "position": {
-      "x": 837.6581586472229,
-      "y": 589.4084365160055
+      "x": 930,
+      "y": 640
     },
     "data": {
       "label": "Har du befintlig bokning?",
       "lane": "WebApp",
-      "details": "Delad gateway för Park-QR och kiosk: antingen hitta befintlig bokning eller köpa på plats.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Park-QR och kiosk delar samma on-site-val: hitta befintlig bokning eller köpa en närliggande tid i parken."
     },
     "measured": {
       "width": 64,
@@ -638,27 +705,25 @@ export const pilotNodes = [
     "id": "kiosk-lookup",
     "type": "task",
     "position": {
-      "x": 1001.7955369660431,
-      "y": 557.4186592465851
+      "x": 1135,
+      "y": 592
     },
     "data": {
       "label": "Hitta befintlig bokning",
       "lane": "WebApp",
-      "details": "Gemensam lookup för mobil via Park-QR och kiosk med befintlig bokning.",
+      "details": "Gemensam lookup för Park-QR och kiosk när gästen redan har bokning.",
       "reads": [
         "booking_ref",
         "telefon + efternamn",
         "QR-matchning"
       ],
       "shownWhen": [
-        "Park-QR öppnas i mobilen",
+        "Gästen skannar parkens QR-ställning",
         "Kiosk används och gästen redan har bokning"
       ],
       "skippedWhen": [
         "SMS-länk med token går direkt till bokningen"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 190,
@@ -671,26 +736,25 @@ export const pilotNodes = [
     "id": "kiosk-buy",
     "type": "task",
     "position": {
-      "x": 1124.5748650055932,
-      "y": 661.9740546958573
+      "x": 1135,
+      "y": 694
     },
     "data": {
       "label": "Köp biljett på plats",
       "lane": "WebApp",
-      "details": "Det här är kioskens huvudsakliga avvikelse från mobilflödet.",
+      "details": "Detta ersätter inte bokning hemma på webbplatsen. Steget är bara för gäster som redan är i parken och visar lediga tider cirka 1?2 timmar framåt.",
       "writes": [
         "walk_in_purchase",
         "nya deltagare",
         "provisorisk operativ state"
       ],
       "shownWhen": [
-        "Kiosk används och ingen befintlig bokning hittas"
+        "Ingen befintlig bokning hittas på plats",
+        "Gästen vill köpa en tid som snart startar i parken"
       ],
       "givesGuest": [
-        "Ny bokning som går vidare in i samma check-in-flöde"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+        "Ny bokning som går vidare in i samma gemensamma check-in-flöde"
+      ]
     },
     "measured": {
       "width": 165,
@@ -703,13 +767,13 @@ export const pilotNodes = [
     "id": "app-booking",
     "type": "task",
     "position": {
-      "x": 1347.6849833160136,
-      "y": 558.320451923705
+      "x": 1435,
+      "y": 592
     },
     "data": {
       "label": "VY: Bokning & deltagare",
       "lane": "WebApp",
-      "details": "Gemensamt huvudsteg för både mobil och kiosk efter att bokningen är identifierad.",
+      "details": "Gemensamt huvudsteg när bokningen hittats via SMS eller lookup, eller skapats på plats i parken.",
       "reads": [
         "bokningssammanfattning",
         "deltagare",
@@ -718,9 +782,7 @@ export const pilotNodes = [
       ],
       "shownWhen": [
         "Bokning finns eller har skapats"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 192,
@@ -746,9 +808,7 @@ export const pilotNodes = [
       ],
       "givesGuest": [
         "Klart safety-läge inför resten av check-in-resan"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 102,
@@ -775,9 +835,7 @@ export const pilotNodes = [
       "writes": [
         "valda tillägg",
         "connected_selected"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 106,
@@ -796,9 +854,7 @@ export const pilotNodes = [
     "data": {
       "label": "Connected valt?",
       "lane": "WebApp",
-      "details": "Connected-profiler visas bara om produkten valts.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Connected-profiler visas bara om produkten valts."
     },
     "measured": {
       "width": 64,
@@ -831,9 +887,7 @@ export const pilotNodes = [
       ],
       "givesGuest": [
         "Fyra profiler redo för bandkoppling hos staff"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 192,
@@ -852,9 +906,7 @@ export const pilotNodes = [
     "data": {
       "label": "Betalning krävs?",
       "lane": "WebApp",
-      "details": "No-payment-vägen är explicit i pilotflödet.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "No-payment-vägen är explicit i pilotflödet."
     },
     "measured": {
       "width": 64,
@@ -884,9 +936,7 @@ export const pilotNodes = [
       ],
       "skippedWhen": [
         "Inga nya tillägg valdes eller totalen är 0"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 123,
@@ -915,9 +965,7 @@ export const pilotNodes = [
         "QR-kod",
         "Kort bokningskod",
         "Bekräftelse att check-in-flödet är klart"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 203,
@@ -945,9 +993,7 @@ export const pilotNodes = [
       ],
       "givesGuest": [
         "Utskriven confirmation eller kvitto"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 230,
@@ -978,9 +1024,7 @@ export const pilotNodes = [
       "staffVerifies": [
         "QR-kod",
         "Bokningskod"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 202,
@@ -1010,9 +1054,7 @@ export const pilotNodes = [
         "Get attendance",
         "Get tickets",
         "Get payments"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1042,9 +1084,7 @@ export const pilotNodes = [
         "Get attendance",
         "Get tickets",
         "Get payments"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1069,9 +1109,7 @@ export const pilotNodes = [
         "Hitta bokningar om 30 min",
         "Skapa token",
         "Skriv sms_outbox"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1094,9 +1132,7 @@ export const pilotNodes = [
       "cadence": "On demand",
       "endpoints": [
         "Get detail of a booking"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1121,9 +1157,7 @@ export const pilotNodes = [
         "Edit booking",
         "Add transaction record",
         "Redeem tickets"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1142,9 +1176,7 @@ export const pilotNodes = [
     "data": {
       "label": "Aurora PostgreSQL",
       "lane": "AWS + Aurora",
-      "details": "Primär operativ databas för JumpYard Cloud.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Primär operativ databas för JumpYard Cloud."
     },
     "measured": {
       "width": 220,
@@ -1161,9 +1193,7 @@ export const pilotNodes = [
     "data": {
       "label": "Redis (valfri i V1)",
       "lane": "AWS + Aurora",
-      "details": "Kortlivade tokens, sessionscache och rate limiting vid behov.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Kortlivade tokens, sessionscache och rate limiting vid behov."
     },
     "measured": {
       "width": 220,
@@ -1181,9 +1211,7 @@ export const pilotNodes = [
     "data": {
       "label": "S3 rå-payloads",
       "lane": "AWS + Aurora",
-      "details": "Rå Roller-payloads, exportfiler och senare analysdump.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Rå Roller-payloads, exportfiler och senare analysdump."
     },
     "measured": {
       "width": 220,
@@ -1200,9 +1228,7 @@ export const pilotNodes = [
     "data": {
       "label": "SQS / EventBridge",
       "lane": "AWS + Aurora",
-      "details": "Köar SMS, retryjobb och andra asynkrona steg.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Köar SMS, retryjobb och andra asynkrona steg."
     },
     "measured": {
       "width": 220,
@@ -1268,9 +1294,7 @@ export const pilotNodes = [
         "Tickets per booking",
         "Produktsammanfattning",
         "Betalningssnapshot"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 250,
@@ -1348,9 +1372,7 @@ export const pilotNodes = [
         "Tokens",
         "SMS-logg",
         "Lätta profilutkast för connected"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 250,
@@ -1405,9 +1427,7 @@ export const pilotNodes = [
         "SMS-händelser",
         "Sync-resultat",
         "Felspår"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 250,
@@ -1451,13 +1471,11 @@ export const pilotNodes = [
         "Bandkoppling",
         "Session state",
         "Device pairing"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 250,
-      "height": 197
+      "height": 141
     },
     "selected": false,
     "dragging": false
@@ -1477,9 +1495,7 @@ export const pilotNodes = [
         "Get attendance",
         "Get tickets",
         "Get payments"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1501,9 +1517,7 @@ export const pilotNodes = [
       "details": "Live-detail när bokning eller lookup behöver en färsk källa.",
       "endpoints": [
         "Get detail of a booking"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1526,9 +1540,7 @@ export const pilotNodes = [
       "endpoints": [
         "Get products",
         "Booking costs"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1551,9 +1563,7 @@ export const pilotNodes = [
       "endpoints": [
         "Edit booking",
         "Add transaction record"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1575,9 +1585,7 @@ export const pilotNodes = [
       "details": "Kritisk slutpunkt när staff slutför handoff i piloten.",
       "endpoints": [
         "Redeem tickets"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 220,
@@ -1596,9 +1604,7 @@ export const pilotNodes = [
     "data": {
       "label": "Assisterad fallback",
       "lane": "Staff / parkpersonal",
-      "details": "Används vid mismatch, saknad kod eller andra undantag.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Används vid mismatch, saknad kod eller andra undantag."
     },
     "measured": {
       "width": 172,
@@ -1617,9 +1623,7 @@ export const pilotNodes = [
     "data": {
       "label": "Manuell kontroll",
       "lane": "Staff / parkpersonal",
-      "details": "Staff kan kontrollera bokning manuellt innan utlämning eller alternativ hantering.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Staff kan kontrollera bokning manuellt innan utlämning eller alternativ hantering."
     },
     "measured": {
       "width": 156,
@@ -1662,9 +1666,7 @@ export const pilotNodes = [
       ],
       "endpoints": [
         "Redeem tickets"
-      ],
-      "edgeHighlighted": false,
-      "dimmed": false
+      ]
     },
     "measured": {
       "width": 173,
@@ -1684,9 +1686,7 @@ export const pilotNodes = [
       "label": "Manuell åtgärd klar",
       "type": "end",
       "lane": "Staff / parkpersonal",
-      "details": "Fallbackgrenen avslutas här när normalen inte kunde användas.",
-      "edgeHighlighted": false,
-      "dimmed": false
+      "details": "Fallbackgrenen avslutas här när normalen inte kunde användas."
     },
     "measured": {
       "width": 48,
@@ -1699,10 +1699,10 @@ export const pilotNodes = [
 
 export const pilotEdges = [
   {
-    "id": "g1",
-    "source": "guest-start",
-    "target": "guest-open",
-    "type": "smoothstep",
+    "id": "g16",
+    "source": "guest-arrive",
+    "target": "guest-present",
+    "type": "step",
     "markerEnd": {
       "type": "arrowclosed",
       "color": "#ff8e7d"
@@ -1712,7 +1712,7 @@ export const pilotEdges = [
       "stroke": "#ff8e7d"
     },
     "sourceHandle": "right",
-    "targetHandle": "left",
+    "targetHandle": "left-top",
     "data": {
       "baseStyle": {
         "strokeWidth": 2,
@@ -1722,164 +1722,14 @@ export const pilotEdges = [
         "type": "arrowclosed",
         "color": "#ff8e7d"
       },
-      "pathMode": "smoothstep",
+      "pathMode": "step",
       "edgeHighlighted": false,
       "dimmed": false
     },
     "zIndex": 0
   },
   {
-    "id": "g2",
-    "source": "guest-open",
-    "target": "guest-review",
-    "type": "smoothstep",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "smoothstep",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
-    "id": "g3",
-    "source": "guest-review",
-    "target": "guest-safety",
-    "type": "smoothstep",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "smoothstep",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
-    "id": "g4",
-    "source": "guest-safety",
-    "target": "guest-addons",
-    "type": "smoothstep",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "smoothstep",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
-    "id": "g5",
-    "source": "guest-addons",
-    "target": "guest-pay",
-    "type": "smoothstep",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "smoothstep",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
-    "id": "g6",
-    "source": "guest-pay",
-    "target": "guest-confirm",
-    "type": "smoothstep",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "smoothstep",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
-    "id": "g7",
+    "id": "g15",
     "source": "guest-confirm",
     "target": "guest-arrive",
     "type": "smoothstep",
@@ -1909,9 +1759,159 @@ export const pilotEdges = [
     "zIndex": 0
   },
   {
-    "id": "g8b",
-    "source": "guest-present",
-    "target": "staff-handoff",
+    "id": "g14",
+    "source": "guest-pay",
+    "target": "guest-confirm",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g13",
+    "source": "guest-addons",
+    "target": "guest-pay",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g12",
+    "source": "guest-safety",
+    "target": "guest-addons",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g11",
+    "source": "guest-review",
+    "target": "guest-safety",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g10",
+    "source": "guest-open",
+    "target": "guest-review",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g9",
+    "source": "guest-onsite-choice",
+    "target": "guest-open",
     "type": "step",
     "markerEnd": {
       "type": "arrowclosed",
@@ -1921,8 +1921,620 @@ export const pilotEdges = [
       "strokeWidth": 2,
       "stroke": "#ff8e7d"
     },
+    "sourceHandle": "right",
+    "targetHandle": "bottom-left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g8",
+    "source": "guest-onsite-entry",
+    "target": "guest-onsite-choice",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g7",
+    "source": "guest-booked",
+    "target": "guest-onsite-entry",
+    "type": "step",
+    "label": "Nej",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
     "sourceHandle": "bottom",
-    "targetHandle": "top",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g6",
+    "source": "guest-entry-choice",
+    "target": "guest-onsite-entry",
+    "type": "step",
+    "label": "Skanna QR / kiosk",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "bottom",
+    "targetHandle": "top-right",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g5",
+    "source": "guest-entry-choice",
+    "target": "guest-open",
+    "type": "step",
+    "label": "SMS-länk",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "top-left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g4",
+    "source": "guest-sms",
+    "target": "guest-entry-choice",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g3",
+    "source": "guest-home-book",
+    "target": "guest-sms",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g2",
+    "source": "guest-booked",
+    "target": "guest-home-book",
+    "type": "step",
+    "label": "Ja",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "top",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "g1",
+    "source": "guest-start",
+    "target": "guest-booked",
+    "type": "smoothstep",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "smoothstep",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w11",
+    "source": "kiosk-buy",
+    "target": "app-booking",
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "bottom-left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w10",
+    "source": "kiosk-lookup",
+    "target": "app-booking",
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w9",
+    "source": "gw-kiosk-existing",
+    "target": "kiosk-buy",
+    "type": "step",
+    "label": "Nej",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "bottom",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w8",
+    "source": "gw-kiosk-existing",
+    "target": "kiosk-lookup",
+    "type": "step",
+    "label": "Ja",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "top",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w7",
+    "source": "kiosk-entry",
+    "target": "gw-kiosk-existing",
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "top",
+    "targetHandle": "bottom",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w6",
+    "source": "gw-mobile-entry",
+    "target": "gw-kiosk-existing",
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w5",
+    "source": "app-mobile",
+    "target": "app-booking",
+    "type": "step",
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "top-left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w4",
+    "source": "gw-channel",
+    "target": "kiosk-entry",
+    "type": "step",
+    "label": "Kiosk",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "bottom",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w3",
+    "source": "gw-channel",
+    "target": "gw-mobile-entry",
+    "type": "step",
+    "label": "Park-QR",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "right",
+    "targetHandle": "left",
+    "data": {
+      "baseStyle": {
+        "strokeWidth": 2,
+        "stroke": "#ff8e7d"
+      },
+      "baseMarkerEnd": {
+        "type": "arrowclosed",
+        "color": "#ff8e7d"
+      },
+      "pathMode": "step",
+      "edgeHighlighted": false,
+      "dimmed": false
+    },
+    "zIndex": 0
+  },
+  {
+    "id": "w2",
+    "source": "gw-channel",
+    "target": "app-mobile",
+    "type": "step",
+    "label": "SMS-länk",
+    "labelStyle": {
+      "fill": "#fff",
+      "fontWeight": 700
+    },
+    "labelBgStyle": {
+      "fill": "#1a1a1a"
+    },
+    "markerEnd": {
+      "type": "arrowclosed",
+      "color": "#ff8e7d"
+    },
+    "style": {
+      "strokeWidth": 2,
+      "stroke": "#ff8e7d"
+    },
+    "sourceHandle": "top",
+    "targetHandle": "left",
     "data": {
       "baseStyle": {
         "strokeWidth": 2,
@@ -1969,9 +2581,9 @@ export const pilotEdges = [
     "zIndex": 0
   },
   {
-    "id": "w3",
-    "source": "gw-channel",
-    "target": "kiosk-entry",
+    "id": "g8b",
+    "source": "guest-present",
+    "target": "staff-handoff",
     "type": "step",
     "markerEnd": {
       "type": "arrowclosed",
@@ -1980,123 +2592,9 @@ export const pilotEdges = [
     "style": {
       "strokeWidth": 2,
       "stroke": "#ff8e7d"
-    },
-    "label": "Kiosk",
-    "labelStyle": {
-      "fill": "#fff",
-      "fontWeight": 700
-    },
-    "labelBgStyle": {
-      "fill": "#1a1a1a"
     },
     "sourceHandle": "bottom",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
-    "id": "w4",
-    "source": "app-mobile",
-    "target": "gw-mobile-entry",
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
-    "id": "w6",
-    "source": "gw-mobile-entry",
-    "target": "app-onsite",
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "label": "Park-QR",
-    "labelStyle": {
-      "fill": "#fff",
-      "fontWeight": 700
-    },
-    "labelBgStyle": {
-      "fill": "#1a1a1a"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
-    "id": "w9",
-    "source": "gw-kiosk-existing",
-    "target": "kiosk-buy",
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "label": "Nej",
-    "labelStyle": {
-      "fill": "#fff",
-      "fontWeight": 700
-    },
-    "labelBgStyle": {
-      "fill": "#1a1a1a"
-    },
-    "sourceHandle": "bottom",
-    "targetHandle": "left",
+    "targetHandle": "top",
     "data": {
       "baseStyle": {
         "strokeWidth": 2,
@@ -3175,240 +3673,6 @@ export const pilotEdges = [
       "strokeWidth": 2,
       "stroke": "#ff8e7d"
     },
-    "source": "gw-channel",
-    "target": "app-mobile",
-    "label": "Mobil",
-    "labelStyle": {
-      "fill": "#fff",
-      "fontWeight": 700
-    },
-    "labelBgStyle": {
-      "fill": "#1a1a1a"
-    },
-    "sourceHandle": "top",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0,
-    "id": "xy-edge__gw-channeltop-app-mobileleft"
-  },
-  {
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "source": "gw-kiosk-existing",
-    "target": "kiosk-lookup",
-    "label": "Ja",
-    "labelStyle": {
-      "fill": "#fff",
-      "fontWeight": 700
-    },
-    "labelBgStyle": {
-      "fill": "#1a1a1a"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0,
-    "id": "xy-edge__gw-kiosk-existingright-kiosk-lookupleft"
-  },
-  {
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "source": "kiosk-entry",
-    "target": "gw-kiosk-existing",
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0,
-    "id": "xy-edge__kiosk-entryright-gw-kiosk-existingleft"
-  },
-  {
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "source": "app-onsite",
-    "target": "gw-kiosk-existing",
-    "sourceHandle": "bottom-left",
-    "targetHandle": "top",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0,
-    "id": "xy-edge__app-onsitebottom-left-gw-kiosk-existingtop"
-  },
-  {
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "source": "gw-mobile-entry",
-    "target": "app-booking",
-    "label": "SMS-länk med token",
-    "labelStyle": {
-      "fill": "#fff",
-      "fontWeight": 700
-    },
-    "labelBgStyle": {
-      "fill": "#1a1a1a"
-    },
-    "sourceHandle": "top",
-    "targetHandle": "top-left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0,
-    "id": "xy-edge__gw-mobile-entrytop-app-bookingtop-left"
-  },
-  {
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "source": "kiosk-lookup",
-    "target": "app-booking",
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0,
-    "id": "xy-edge__kiosk-lookupright-app-bookingleft"
-  },
-  {
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "source": "kiosk-buy",
-    "target": "app-booking",
-    "sourceHandle": "right",
-    "targetHandle": "bottom-left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "step",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0,
-    "id": "xy-edge__kiosk-buyright-app-bookingbottom-left"
-  },
-  {
-    "type": "step",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
     "source": "app-connected",
     "target": "gw-app-payment",
     "sourceHandle": "right",
@@ -3611,36 +3875,6 @@ export const pilotEdges = [
     },
     "zIndex": 0,
     "id": "xy-edge__staff-handoffright-top-guest-endbottom"
-  },
-  {
-    "type": "smoothstep",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "source": "guest-arrive",
-    "target": "guest-present",
-    "sourceHandle": "right",
-    "targetHandle": "left-top",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "smoothstep",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0,
-    "id": "xy-edge__guest-arriveright-guest-presentleft-top"
   },
   {
     "type": "step",
@@ -4435,15 +4669,15 @@ export const pilotEdges = [
         "color": "#22d3ee"
       },
       "pathMode": "step",
-      "details": "Walk-in-köp skriver första operativa state innan gemensamt huvudflöde fortsätter.",
+      "details": "On-site-köp skriver första operativa state innan det gemensamma huvudflödet fortsätter.",
       "operation": "Skrivning",
       "fields": [
         "walk_in_purchase",
         "nya deltagare",
-        "channel = kiosk",
+        "channel = onsite",
         "preliminary confirmation"
       ],
-      "why": "Kiosk behöver kunna skapa en lokal operativ grund innan writeback och bekräftelse.",
+      "why": "Park-QR och kiosk ska kunna skapa samma lokala operativa grund innan writeback och bekräftelse.",
       "edgeHighlighted": false,
       "dimmed": false
     },
