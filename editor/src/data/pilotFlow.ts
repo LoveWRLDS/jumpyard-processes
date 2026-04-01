@@ -1125,40 +1125,12 @@ export const pilotNodes = [
     "selected": false,
     "dragging": false
   },
-  {
-    "id": "job-attendance",
-    "type": "service",
-    "position": {
-      "x": 1943.3778918111186,
-      "y": 1084.1613106694574
-    },
-    "data": {
-      "label": "Ankomstavstämning",
-      "lane": "Ops jobs",
-      "details": "Hämtar faktiska arrivals och redeemade biljetter för avstämning och support, inte för live-sync.",
-      "cadence": "Dagligen / vid behov",
-      "jobs": [
-        "Hämtar redeemade ankomster",
-        "Fångar externa check-ins",
-        "Skriver avstämningshändelser"
-      ],
-      "endpoints": [
-        "Get attendance"
-      ]
-    },
-    "measured": {
-      "width": 220,
-      "height": 104
-    },
-    "selected": false,
-    "dragging": false
-  },
 
   {
     "id": "job-sms",
     "type": "service",
     "position": {
-      "x": 2278.8516737562525,
+      "x": 1943.3778918111186,
       "y": 1084.1613106694574
     },
     "data": {
@@ -1184,7 +1156,7 @@ export const pilotNodes = [
     "id": "job-refresh",
     "type": "service",
     "position": {
-      "x": 2601.4807830581235,
+      "x": 2278.8516737562525,
       "y": 1083.6712423191495
     },
     "data": {
@@ -1208,7 +1180,7 @@ export const pilotNodes = [
     "id": "job-retry",
     "type": "service",
     "position": {
-      "x": 2924.4807830581235,
+      "x": 2601.4807830581235,
       "y": 1084.8916804506885
     },
     "data": {
@@ -1465,7 +1437,7 @@ export const pilotNodes = [
       "collapsed": true,
       "expandLabel": "Expandera databas",
       "collapseLabel": "Fäll ihop databas",
-      "summary": "Append-only eventspår, webhook-intake, attendance-avstämning och sync-observability för pilotens drift.",
+      "summary": "Append-only eventspår, webhook-intake och sync-observability för pilotens drift.",
       "summaryItems": [
         "booking_events",
         "sync_runs",
@@ -1482,25 +1454,21 @@ export const pilotNodes = [
         "status",
         "error_summary"
       ],
-      "writePattern": "Append-only från WebApp, staff och ops jobs. Webhook-events och attendance synkas hit för drift och avstämning.",
+      "writePattern": "Append-only från WebApp, staff och ops jobs. Webhook-events och driftspår synkas hit för felsökning och support.",
       "usedBy": [
         "Support",
         "Drift",
-        "Check-in-avstämning"
+        "Felsökning"
       ],
       "jobs": [
         "Daglig seed",
         "Booking webhook intake",
         "Webhook enrichment",
-        "Ankomstavstämning",
         "Retry för writeback"
-      ],
-      "endpoints": [
-        "Get attendance"
       ],
       "contains": [
         "Visit events",
-        "Attendance-rader",
+        "Webhook-events",
         "Sync-resultat",
         "Felspår"
       ]
@@ -1672,32 +1640,10 @@ export const pilotNodes = [
     "dragging": false
   },
   {
-    "id": "roller-attendance",
-    "type": "service",
-    "position": {
-      "x": 2556.9908031595673,
-      "y": 1311.5471863067523
-    },
-    "data": {
-      "label": "Get attendance",
-      "lane": "Roller API",
-      "details": "Visar vilka booking items som faktiskt har redeemats eller checkats in.",
-      "endpoints": [
-        "Get attendance"
-      ]
-    },
-    "measured": {
-      "width": 220,
-      "height": 81
-    },
-    "selected": false,
-    "dragging": false
-  },
-  {
     "id": "roller-writeback",
     "type": "service",
     "position": {
-      "x": 2848.9908031595673,
+      "x": 2556.9908031595673,
       "y": 1299.3301948650321
     },
     "data": {
@@ -3118,38 +3064,8 @@ export const pilotEdges = [
     "zIndex": 0
   },
   {
-    "id": "o2b",
-    "source": "job-enrich",
-    "target": "job-attendance",
-    "type": "smoothstep",
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#ff8e7d"
-    },
-    "style": {
-      "strokeWidth": 2,
-      "stroke": "#ff8e7d"
-    },
-    "sourceHandle": "right",
-    "targetHandle": "left",
-    "data": {
-      "baseStyle": {
-        "strokeWidth": 2,
-        "stroke": "#ff8e7d"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#ff8e7d"
-      },
-      "pathMode": "smoothstep",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "zIndex": 0
-  },
-  {
     "id": "o3",
-    "source": "job-attendance",
+    "source": "job-enrich",
     "target": "job-sms",
     "type": "smoothstep",
     "markerEnd": {
@@ -3367,93 +3283,6 @@ export const pilotEdges = [
     "targetHandle": "bottom",
     "zIndex": 0,
     "selected": false
-  },
-    {
-    "id": "d16a",
-    "source": "job-attendance",
-    "target": "roller-attendance",
-    "type": "step",
-    "style": {
-      "strokeWidth": 1.5,
-      "stroke": "#22d3ee",
-      "strokeDasharray": "3,5"
-    },
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#22d3ee"
-    },
-    "data": {
-      "edgeKind": "data",
-      "edgeStyle": "data",
-      "baseStyle": {
-        "strokeWidth": 1.5,
-        "stroke": "#22d3ee",
-        "strokeDasharray": "3,5"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#22d3ee"
-      },
-      "pathMode": "step",
-      "details": "Ankomstavstämningen hämtar faktiska check-ins från Roller under dagen.",
-      "operation": "Sync",
-      "fields": [
-        "bookingReference",
-        "checkInDateTime",
-        "bookingItemPartId",
-        "employeeId"
-      ],
-      "why": "Get attendance ska användas för faktisk ankomst- och redeem-avstämning, inte för dagens seed av väntade gäster.",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "sourceHandle": "bottom-left",
-    "targetHandle": "top-right",
-    "zIndex": 0
-  },
-
-  {
-    "id": "d16b",
-    "source": "job-attendance",
-    "target": "store-events",
-    "type": "step",
-    "style": {
-      "strokeWidth": 1.5,
-      "stroke": "#22d3ee",
-      "strokeDasharray": "3,5"
-    },
-    "markerEnd": {
-      "type": "arrowclosed",
-      "color": "#22d3ee"
-    },
-    "data": {
-      "edgeKind": "data",
-      "edgeStyle": "data",
-      "baseStyle": {
-        "strokeWidth": 1.5,
-        "stroke": "#22d3ee",
-        "strokeDasharray": "3,5"
-      },
-      "baseMarkerEnd": {
-        "type": "arrowclosed",
-        "color": "#22d3ee"
-      },
-      "pathMode": "step",
-      "details": "Ankomstavstämningen skriver redeem- och attendance-observability till eventlagret.",
-      "operation": "Skrivning",
-      "fields": [
-        "attendance rows",
-        "checkInDateTime",
-        "employeeId",
-        "locationIds"
-      ],
-      "why": "Drift och support behöver se vad som faktiskt checkats in, även när det skett utanför JumpYards eget flöde.",
-      "edgeHighlighted": false,
-      "dimmed": false
-    },
-    "sourceHandle": "top-right",
-    "targetHandle": "bottom-left",
-    "zIndex": 0
   },
   {
     "id": "d19",

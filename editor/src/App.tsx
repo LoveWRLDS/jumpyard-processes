@@ -570,7 +570,7 @@ const ROLLER_API_REFERENCES: Record<string, RollerApiReference> = {
   },
 };
 
-const ROLLER_API_STAGE_MAP = [
+const ROLLER_API_STAGE_MAP_OLD = [
   {
     priority: 'CRITICAL',
     stage: 'Webhook intake och enrichment',
@@ -606,6 +606,45 @@ const ROLLER_API_STAGE_MAP = [
     stage: 'Ankomst- och redeem-avstämning',
     endpoints: ['Get attendance'],
     desc: 'Get attendance visar vad som faktiskt checkats in när booking items redeemas och bör hållas separat från dagens seed och webhook-flöde.',
+  },
+] as const;
+
+const ROLLER_API_STAGE_MAP = [
+  {
+    priority: 'CRITICAL',
+    stage: 'Webhook intake och enrichment',
+    endpoints: ['Booking webhook', 'Get detail of a booking', 'Get customer detail'],
+    desc: 'Booking webhook signalerar sena bokningar och uppdateringar, medan booking- och customer-detail berikar lokal state för SMS och lookup.',
+  },
+  {
+    priority: 'CRITICAL',
+    stage: 'Tillägg och prisberäkning',
+    endpoints: ['Get products', 'Booking costs'],
+    desc: 'Stödjer val av tillägg och räknar om bokningen innan betalning eller writeback.',
+  },
+  {
+    priority: 'CRITICAL',
+    stage: 'Writeback till Roller',
+    endpoints: ['Edit booking', 'Add transaction record'],
+    desc: 'Lägger till produkter på befintlig bokning och registrerar extern betalning.',
+  },
+  {
+    priority: 'CRITICAL',
+    stage: 'Inlösen vid ankomst',
+    endpoints: ['Redeem tickets'],
+    desc: 'Per-ticket check-in som är den kritiska slutpunkten i pilotflödet.',
+  },
+  {
+    priority: 'HIGH',
+    stage: 'Daglig seed för snapshot och kundcache',
+    endpoints: ['Get bookings', 'Get tickets', 'Get payments', 'Get customers'],
+    desc: 'Get bookings, Get tickets och Get payments bygger dagens snapshot, medan Get customers ger lokal kundcache och telefonnummer för SMS.',
+  },
+  {
+    priority: 'LOW',
+    stage: 'Valfri off-hours reconciliation',
+    endpoints: ['Get attendance'],
+    desc: 'Get attendance kan användas för efterhandsavstämning utanför öppettid, men inte som ett aktivt jobb i pilotens dagsflöde.',
   },
 ] as const;
 
@@ -1136,7 +1175,7 @@ function sanitizeEdgeForStorage(edge: any, nodesOrLookup?: any[] | Map<string, a
 
 // ─── Persistence ──────────────────────────────────────────────────────────────
 
-const FLOW_SCHEMA_VERSION = '2026-04-webhook-enrichment-v1';
+const FLOW_SCHEMA_VERSION = '2026-04-webhook-enrichment-v2';
 const STORAGE_NODES = `jy-bpmn-nodes:${FLOW_SCHEMA_VERSION}`;
 const STORAGE_EDGES = `jy-bpmn-edges:${FLOW_SCHEMA_VERSION}`;
 const STORAGE_LANGUAGE = 'jy-bpmn-language';

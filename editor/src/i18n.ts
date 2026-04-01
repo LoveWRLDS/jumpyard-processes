@@ -1062,12 +1062,18 @@ const EN_TEXT: Record<string, string> = {
   'Skrivs av WebApp, webhook enrichment, staff-handoff och SMS-jobb. Läser inför SMS, redeem och utlämning.': 'Written by the WebApp, webhook enrichment, staff handoff and SMS jobs. Read before SMS, redeem and pickup.',
   'Kundkontakt för SMS': 'Customer contact for SMS',
   'Append-only eventspår, webhook-intake, attendance-avstämning och sync-observability för pilotens drift.': 'Append-only event trail, webhook intake, attendance reconciliation and sync observability for pilot operations.',
+  'Append-only eventspår, webhook-intake och sync-observability för pilotens drift.': 'Append-only event trail, webhook intake and sync observability for pilot operations.',
   'Append-only från WebApp, staff och ops jobs. Webhook-events och attendance synkas hit för drift och avstämning.': 'Append-only from the WebApp, staff and ops jobs. Webhook events and attendance are synced here for operations and reconciliation.',
+  'Append-only från WebApp, staff och ops jobs. Webhook-events och driftspår synkas hit för felsökning och support.': 'Append-only from the WebApp, staff and ops jobs. Webhook events and operational traces are synced here for troubleshooting and support.',
+  'Webhook-events': 'Webhook events',
+  'Felsökning': 'Troubleshooting',
   'Webhook intake och enrichment': 'Webhook intake and enrichment',
   'Booking webhook signalerar sena bokningar och uppdateringar, medan booking- och customer-detail berikar lokal state för SMS och lookup.': 'The booking webhook signals late bookings and updates, while booking and customer detail enrich local state for SMS and lookup.',
   'Daglig seed för snapshot och kundcache': 'Daily seed for snapshot and customer cache',
   'Get bookings, Get tickets och Get payments bygger dagens snapshot, medan Get customers ger lokal kundcache och telefonnummer för SMS.': 'Get bookings, Get tickets and Get payments build today\'s snapshot, while Get customers provides a local customer cache and phone numbers for SMS.',
   'Get attendance visar vad som faktiskt checkats in när booking items redeemas och bör hållas separat från dagens seed och webhook-flöde.': 'Get attendance shows what has actually been checked in when booking items are redeemed and should be kept separate from today\'s seed and webhook flow.',
+  'Valfri off-hours reconciliation': 'Optional off-hours reconciliation',
+  'Get attendance kan användas för efterhandsavstämning utanför öppettid, men inte som ett aktivt jobb i pilotens dagsflöde.': 'Get attendance can be used for after-hours reconciliation outside opening hours, but not as an active job in the pilot day flow.',
 };
 
 function repairMojibake(value: string): string {
